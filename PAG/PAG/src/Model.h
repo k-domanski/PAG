@@ -25,13 +25,10 @@ class Model
 public:
 	// model data 
 	std::vector<Text> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-	std::vector<Mesh>    meshes;
+	std::vector<Mesh> meshes;
 	std::string directory;
 	bool gammaCorrection;
-	Model(int okon)
-		:gammaCorrection(okon)
-	{
-	}
+
 	// constructor, expects a filepath to a 3D model.
 	Model(std::string const& path, bool gamma = false) : gammaCorrection(gamma)
 	{
@@ -44,7 +41,6 @@ public:
 		for (unsigned int i = 0; i < meshes.size(); i++)
 			meshes[i].Draw(shader);
 	}
-
 
 	// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 	void loadModel(std::string const& path)

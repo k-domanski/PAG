@@ -15,6 +15,7 @@
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Renderer.h"
+#include "Model.h"
 
 struct drawingData
 {
@@ -188,7 +189,7 @@ int main(void)
 		IndexBuffer ibo(indecies, 36);
 
 		Shader shader("res/shaders/Basic.shader");
-		
+
 		Texture texture("res/textures/hollow-knight.png", "texture_diff");
 		texture.Bind(0);
 		shader.setUniform1i("u_Texture", 0);
@@ -237,7 +238,6 @@ int main(void)
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			
 			Rotate(currentRot, rot, camera);
-			Rotate(currentRot, rot, view);
 			
 			{
 				Menger(depth, glm::vec3(0.0f), glm::vec3(1.0f), data);
