@@ -16,6 +16,19 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "Model.h"
+#include "Camera.h"
+
+
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+Camera gCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+float gLastX = SCR_WIDTH / 2.0f;
+float gLastY = SCR_HEIGHT / 2.0f;
+bool gFirstMouse = true;
+
+float gDeltaTime = 0.0f;
+float gLastFrame = 0.0f;
 
 struct drawingData
 {
@@ -29,67 +42,12 @@ struct drawingData
 	}
 };
 
-void Menger(int n, const glm::vec3& position, const glm::vec3& scale, drawingData& data)
-{
-	glm::vec3 newPosition;
-	glm::vec3 newScale;
-	
-	if (n == 0)
-	{
-		data.newPositions.push_back(position);
-		data.newScales.push_back(scale);
-	}
-	else
-	{
-		for (int i = -1; i < 2; i++)
-		{
-			for (int j = -1; j < 2; j++)
-			{
-				for (int k = -1; k < 2; k++)
-				{
-					if ((i * i + j * j) * (i * i + k * k) * (j * j + k * k) > 0)
-					{
-						newScale = scale * (1.0f / 3.0f);
-						newPosition = glm::vec3(position.x + i * newScale.x, 
-												position.y + j * newScale.y, 
-												position.z + k * newScale.z);
-						
-						Menger(n - 1, newPosition, newScale, data);
-					}
-				}
-			}
-		}
-	}
-}
-
-void Rotate(glm::vec3& current, const glm::vec3& rotation, glm::mat4& view)
-{
-	glm::vec3 change = glm::vec3(0.0f);
-	change = rotation - current;
-	glm::vec3 vec[] = 
-	{
-		glm::vec3(-1.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, -1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, -1.0f)
-	};
-
-	for (int i = 0; i < 3; i++)
-	{
-		current[i] != rotation[i] ? view = glm::rotate_slow(view, glm::radians(change[i]), vec[i]) : view = glm::rotate(view, 0.0f, vec[i]);
-	}
-	
-	current = rotation;
-}
-
-void Zoom(glm::vec3& current, const glm::vec3& value, glm::mat4& view)
-{
-	glm::vec3 result = glm::vec3(0.0f);
-	if (current.x < value.x || current.y < value.y || current.z < value.z)
-		current.z != value.z ? view = glm::translate(view, glm::normalize(glm::vec3(0.0f, 0.0f, value.z))) : view = glm::translate(view, glm::vec3(0.0f));
-	else
-		current.z != value.z ? view = glm::translate(view, glm::normalize(glm::vec3(0.0f, 0.0f, -value.z))) : view = glm::translate(view, glm::vec3(0.0f));
-	current = value;
-}
+void Menger(int n, const glm::vec3& position, const glm::vec3& scale, drawingData& data);
+void Rotate(glm::vec3& current, const glm::vec3& rotation, glm::mat4& view);
+void ProcessInput(GLFWwindow* window);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main(void)
 {
@@ -104,15 +62,19 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(1024, 768, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Solar System", NULL, NULL);
 	if (!window)
 	{
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	glfwSwapInterval(1);
 
@@ -177,15 +139,16 @@ int main(void)
 			22,23,20
 		};
 		
-		VertexArray vao;
 
+		VertexArray vao;
+		
 		VertexBufferLayout layout;
 		layout.Push<float>(3);
 		layout.Push<float>(2);
-
+		
 		VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
 		vao.AddBuffer(vbo, layout);
-
+		
 		IndexBuffer ibo(indecies, 36);
 
 		Shader shader("res/shaders/Basic.shader");
@@ -204,12 +167,6 @@ int main(void)
 		
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
 		ImVec4 texture_color = ImVec4(1.0f, 0.3f, 0.2f, 1.0f);
-		
-		glm::mat4 proj = glm::mat4(1.0f);
-		proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 100.0f);
-
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -4.0f));
 
 		glm::mat4 model = glm::mat4(1.0f);
 
@@ -228,9 +185,16 @@ int main(void)
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
+			float currentFrame = glfwGetTime();
+			gDeltaTime = currentFrame - gLastFrame;
+			gLastFrame = currentFrame;
+
+			ProcessInput(window);
 			/* Render here */
 
 			renderer.Clear();
+			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+			glm::mat4 view = gCamera.GetViewMatrix();
 
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -255,9 +219,9 @@ int main(void)
 					model = glm::translate(model, data.newPositions[i]);
 					model = glm::scale(model, data.newScales[i]);
 					glm::mat4 mvp = glm::mat4(1.0f);
-					mvp = proj * camera * model;
+					mvp = projection * view * model;
 					shader.SetUniformMat4f("u_MVP", mvp);
-
+				
 					renderer.Draw(vao, ibo, shader);
 				}
 				data.clearData();
@@ -291,4 +255,99 @@ int main(void)
 	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
+}
+
+void Menger(int n, const glm::vec3& position, const glm::vec3& scale, drawingData& data)
+{
+	glm::vec3 newPosition;
+	glm::vec3 newScale;
+
+	if (n == 0)
+	{
+		data.newPositions.push_back(position);
+		data.newScales.push_back(scale);
+	}
+	else
+	{
+		for (int i = -1; i < 2; i++)
+		{
+			for (int j = -1; j < 2; j++)
+			{
+				for (int k = -1; k < 2; k++)
+				{
+					if ((i * i + j * j) * (i * i + k * k) * (j * j + k * k) > 0)
+					{
+						newScale = scale * (1.0f / 3.0f);
+						newPosition = glm::vec3(position.x + i * newScale.x,
+							position.y + j * newScale.y,
+							position.z + k * newScale.z);
+
+						Menger(n - 1, newPosition, newScale, data);
+					}
+				}
+			}
+		}
+	}
+}
+
+void Rotate(glm::vec3 & current, const glm::vec3 & rotation, glm::mat4 & view)
+{
+	glm::vec3 change = glm::vec3(0.0f);
+	change = rotation - current;
+	glm::vec3 vec[] =
+	{
+		glm::vec3(-1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, -1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, -1.0f)
+	};
+
+	for (int i = 0; i < 3; i++)
+	{
+		current[i] != rotation[i] ? view = glm::rotate_slow(view, glm::radians(change[i]), vec[i]) : view = glm::rotate(view, 0.0f, vec[i]);
+	}
+
+	current = rotation;
+}
+
+void ProcessInput(GLFWwindow * window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		gCamera.ProcessKeyboard(FORWARD, gDeltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		gCamera.ProcessKeyboard(BACKWARD, gDeltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		gCamera.ProcessKeyboard(LEFT, gDeltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		gCamera.ProcessKeyboard(RIGHT, gDeltaTime);
+}
+
+void scroll_callback(GLFWwindow * window, double xoffset, double yoffset)
+{
+	gCamera.ProcessMouseScroll(yoffset);
+}
+
+void mouse_callback(GLFWwindow * window, double xpos, double ypos)
+{
+	if (gFirstMouse)
+	{
+		gLastX = xpos;
+		gLastY = ypos;
+		gFirstMouse = false;
+	}
+
+	float xoffset = xpos - gLastX;
+	float yoffset = gLastY - ypos;
+
+	gLastX = xpos;
+	gLastY = ypos;
+
+	gCamera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void framebuffer_size_callback(GLFWwindow * window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }

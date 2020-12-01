@@ -23,7 +23,6 @@ in vec2 v_TexCoord;
 
 uniform vec4 u_Color;
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_diffuse2;
 
 void main()
 {
