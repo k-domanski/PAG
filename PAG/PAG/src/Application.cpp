@@ -17,6 +17,7 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Camera.h"
+#include "MeshTest.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -125,32 +126,32 @@ int main(void)
 			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
-
+		
 			Vertex({glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f, 0.5f), glm::vec2(1.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f,  0.5f, 0.5f), glm::vec2(0.0f, 1.0f)}),
-
+		
 			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
 			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-
+		
 			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 0.0f)}),
-
+		
 			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-
+		
 			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
 			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
 			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-
+		
 		};
 
 		std::vector<unsigned int> indecies = {
@@ -173,29 +174,33 @@ int main(void)
 			22,23,20
 		};
 		
-
-		VertexArray vao;
+		
+		//VertexArray vao;
 		
 		//VertexBufferLayout layout;
 		//layout.Push<float>(3);
 		//layout.Push<float>(2);
 		
-		VertexBufferLayout layout;
-		layout.Push<Vertex>(3);
-		layout.Push<Vertex>(2);
+		//VertexBufferLayout layout;
+		//layout.Push<Vertex>(3);
+		//layout.Push<Vertex>(2);
 
-		VertexBuffer vbo(vertices);
+		//VertexBuffer vbo(vertices);
 		//VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
-		vao.AddBuffer(vbo, layout);
+		//vao.AddBuffer(vbo, layout);
 		
-		IndexBuffer ibo(indecies, 36);
+		//IndexBuffer ibo(indecies, 36);
 
 		Shader shader("res/shaders/Basic.shader");
 
+		std::vector<Texture> textures;
 		Texture texture("res/textures/hollow-knight.png", "texture_diff");
+		textures.push_back(texture);
+		Mesh mesh(vertices, indecies, textures);
 		texture.Bind(0);
 		shader.setUniform1i("u_Texture", 0);
 		shader.Unbind();
+		//mesh.Draw(shader);
 		Renderer renderer;
 
 		ImGui::CreateContext();
@@ -204,7 +209,7 @@ int main(void)
 
 		ImGui::StyleColorsDark();
 		
-		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
+		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 		ImVec4 texture_color = ImVec4(1.0f, 0.3f, 0.2f, 1.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
@@ -261,9 +266,13 @@ int main(void)
 					mvp = projection * view * model;
 					shader.SetUniformMat4f("u_MVP", mvp);
 				
-					renderer.Draw(vao, ibo, shader);
+					//renderer.Draw(vao, ibo, shader);
+					renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
 				}
 				data.clearData();
+				//glm::mat4 mvp = projection * view * model;
+				//shader.SetUniformMat4f("u_MVP", mvp);
+				//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
 			}
 
 			{
