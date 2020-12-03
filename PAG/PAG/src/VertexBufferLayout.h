@@ -57,6 +57,13 @@ public:
 		m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
 	}
 
+	template<>
+	void Push<Vertex>(unsigned int count)
+	{
+		m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
+		m_Stride = sizeof(Vertex);
+	}
+
 	inline const std::vector<VertexBufferElement>& GetElements() const { return  m_Elements; }
 	inline unsigned int GetStride() const { return m_Stride; }
 };

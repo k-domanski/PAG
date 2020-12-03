@@ -5,7 +5,7 @@
 struct Vertex
 {
 	glm::vec3 Position;
-	glm::vec3 Normal;
+	//glm::vec3 Normal;
 	glm::vec2 TextCoords;
 };
 
@@ -16,7 +16,7 @@ private:
 public:
 	VertexBuffer() {}
 	VertexBuffer(const std::vector<float>& data, unsigned int size);
-	VertexBuffer(const std::vector<Vertex>& data, unsigned int size);
+	VertexBuffer(const std::vector<Vertex>& data);
 	~VertexBuffer();
 
 	void Bind() const;

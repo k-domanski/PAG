@@ -9,7 +9,7 @@ VertexBuffer::VertexBuffer(const std::vector<float>& data, unsigned int size)
 	glBufferData(GL_ARRAY_BUFFER, size, &data[0], GL_STATIC_DRAW);
 }
 
-VertexBuffer::VertexBuffer(const std::vector<Vertex>& data, unsigned int size)
+VertexBuffer::VertexBuffer(const std::vector<Vertex>& data)
 {
 	glGenBuffers(1, &m_RendererID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);

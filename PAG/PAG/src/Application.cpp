@@ -87,36 +87,70 @@ int main(void)
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		std::vector<float> vertices = {
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//0
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//1
-			 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//2
-			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//3
+		//std::vector<float> vertices = {
+		//	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//0
+		//	 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//1
+		//	 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//2
+		//	-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//3
+		//
+		//	-0.5f, -0.5f, 0.5f,  0.0f, 0.0f,		//4
+		//	 0.5f, -0.5f, 0.5f,  1.0f, 0.0f,		//5
+		//	 0.5f,  0.5f, 0.5f,  1.0f, 1.0f,		//6
+		//	-0.5f,  0.5f, 0.5f,  0.0f, 1.0f,		//7
+		//
+		//	 0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//8
+		//	 0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//9
+		//	 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,	//10
+		//	 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//11
+		//
+		//	-0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//0
+		//	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
+		//	-0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//3
+		//	-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,	//4
+		//
+		//	-0.5f,  0.5f, -0.5f, 0.0f, 0.0f,	//3
+		//	 0.5f,  0.5f, -0.5f, 1.0f, 0.0f,	//2
+		//	 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//6
+		//	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
+		//
+		//	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		//     0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+		//	 0.5f, -0.5f,  0.5f, 1.0f, 1.0f,
+		//	-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
+		//};
 
-			-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,		//4
-			 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,		//5
-			 0.5f,  0.5f, 0.5f, 1.0f, 1.0f,		//6
-			-0.5f,  0.5f, 0.5f, 0.0f, 1.0f,		//7
+		std::vector<Vertex> vertices =
+		{
+			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
 
-			 0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//8
-			 0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//9
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,	//10
-			 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//11
+			Vertex({glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f, 0.5f), glm::vec2(1.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f,  0.5f, 0.5f), glm::vec2(0.0f, 1.0f)}),
 
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//0
-			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
-			-0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//3
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,	//4
+			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
+			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
 
-			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f,	//3
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f,	//2
-			 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//6
-			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
+			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 0.0f)}),
 
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-		     0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f, 1.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
+			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+
+			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
+			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+
 		};
 
 		std::vector<unsigned int> indecies = {
@@ -142,11 +176,16 @@ int main(void)
 
 		VertexArray vao;
 		
-		VertexBufferLayout layout;
-		layout.Push<float>(3);
-		layout.Push<float>(2);
+		//VertexBufferLayout layout;
+		//layout.Push<float>(3);
+		//layout.Push<float>(2);
 		
-		VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
+		VertexBufferLayout layout;
+		layout.Push<Vertex>(3);
+		layout.Push<Vertex>(2);
+
+		VertexBuffer vbo(vertices);
+		//VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
 		vao.AddBuffer(vbo, layout);
 		
 		IndexBuffer ibo(indecies, 36);
