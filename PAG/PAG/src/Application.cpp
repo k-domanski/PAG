@@ -1,3 +1,4 @@
+#pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -9,15 +10,14 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "Shader.h"
 #include "Model.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Renderer.h"
-#include "Model.h"
 #include "Camera.h"
 #include "MeshTest.h"
+#include "ModelTest.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -87,7 +87,7 @@ int main(void)
 
 	{
 		glEnable(GL_DEPTH_TEST);
-
+		stbi_set_flip_vertically_on_load(true);
 		//std::vector<float> vertices = {
 		//	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//0
 		//	 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//1
@@ -120,39 +120,39 @@ int main(void)
 		//	-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
 		//};
 
-		std::vector<Vertex> vertices =
-		{
-			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
-		
-			Vertex({glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f, 0.5f), glm::vec2(1.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f,  0.5f, 0.5f), glm::vec2(0.0f, 1.0f)}),
-		
-			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
-			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-		
-			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 0.0f)}),
-		
-			Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-		
-			Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-			Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-			Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-		
-		};
+		//std::vector<Vertex> vertices =
+		//{
+		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
+		//
+		//	Vertex({glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f, 0.5f), glm::vec2(1.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f,  0.5f, 0.5f), glm::vec2(0.0f, 1.0f)}),
+		//
+		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
+		//	Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
+		//
+		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 0.0f)}),
+		//
+		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+		//
+		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
+		//	Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
+		//	Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
+		//
+		//};
 
 		std::vector<unsigned int> indecies = {
 			0, 1, 2,
@@ -191,17 +191,20 @@ int main(void)
 		
 		//IndexBuffer ibo(indecies, 36);
 
+		//Shader shader("res/shaders/1.model_loading.vs", "res/shaders/1.model_loading.fs");
 		Shader shader("res/shaders/Basic.shader");
-
-		std::vector<Texture> textures;
-		Texture texture("res/textures/hollow-knight.png", "texture_diff");
-		textures.push_back(texture);
-		Mesh mesh(vertices, indecies, textures);
-		texture.Bind(0);
-		shader.setUniform1i("u_Texture", 0);
-		shader.Unbind();
+		//shader.Bind();
+		Model backpack("res/models/backpack/backpack.obj");
+		//Model backpack("res/models/nanosuit/nanosuit.obj");
+		//std::vector<Texture> textures;
+		//Texture texture("res/textures/hollow-knight.png", "texture_diff");
+		//textures.push_back(texture);
+		//Mesh mesh(vertices, indecies, textures);
+		//texture.Bind(0);
+		//shader.setUniform1i("u_Texture", 0);
+		//shader.Unbind();
 		//mesh.Draw(shader);
-		Renderer renderer;
+		//Renderer renderer;
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -225,7 +228,6 @@ int main(void)
 
 		glm::mat4 camera = glm::mat4(1.0f);
 		camera = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -236,7 +238,10 @@ int main(void)
 			ProcessInput(window);
 			/* Render here */
 
-			renderer.Clear();
+			Renderer::Clear();
+			//glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shader.Bind();
 			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
 
@@ -244,35 +249,44 @@ int main(void)
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-			
+			shader.SetUniformMat4f("projection", projection);
+			shader.SetUniformMat4f("view", view);
 			Rotate(currentRot, rot, camera);
-			
+			model = glm::translate(model, glm::vec3(0.0f));
+			model = glm::scale(model, glm::vec3(1.0f));
+			model = glm::rotate_slow(model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+			shader.SetUniformMat4f("model", model);
+			//shader.Bind();
+			mvp = projection * view * model;
+			//shader.SetUniformMat4f("u_MVP", mvp);
+			backpack.Draw(shader);
 			{
-				Menger(depth, glm::vec3(0.0f), glm::vec3(1.0f), data);
-				shader.Bind();
-				shader.SetUniform4f("u_Color", texture_color.x, texture_color.y, texture_color.z, texture_color.w);
-
+			//	Menger(depth, glm::vec3(0.0f), glm::vec3(1.0f), data);
+			//	shader.Bind();
+			//	//shader.SetUniform4f("u_Color", texture_color.x, texture_color.y, texture_color.z, texture_color.w);
+			//
 				if (isWireFrame)
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				else
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-				for (int i = 0; i < data.newPositions.size(); i++)
-				{
-					model = glm::mat4(1.0f);
-					model = glm::translate(model, data.newPositions[i]);
-					model = glm::scale(model, data.newScales[i]);
-					glm::mat4 mvp = glm::mat4(1.0f);
-					mvp = projection * view * model;
-					shader.SetUniformMat4f("u_MVP", mvp);
-				
-					//renderer.Draw(vao, ibo, shader);
-					renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
-				}
-				data.clearData();
-				//glm::mat4 mvp = projection * view * model;
-				//shader.SetUniformMat4f("u_MVP", mvp);
-				//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
+			//
+			//	//for (int i = 0; i < data.newPositions.size(); i++)
+			//	//{
+			//	//	model = glm::mat4(1.0f);
+			//	//	model = glm::translate(model, data.newPositions[i]);
+			//	//	model = glm::scale(model, data.newScales[i]);
+			//	//	glm::mat4 mvp = glm::mat4(1.0f);
+			//	//	mvp = projection * view * model;
+			//	//	shader.SetUniformMat4f("u_MVP", mvp);
+			//	//
+			//	//	//renderer.Draw(vao, ibo, shader);
+			//	//	//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
+			//	//}
+			//	//data.clearData();
+			//	//glm::mat4 mvp = projection * view * model;
+			//	//shader.SetUniformMat4f("u_MVP", mvp);
+			//	//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
+			//	backpack.Draw(shader);
 			}
 
 			{

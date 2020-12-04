@@ -10,7 +10,7 @@ private:
 	int m_Width, m_Height, m_BBP;
 	std::string m_Type;
 public:
-	Texture(const std::string& filename, const std::string& type);
+	Texture(const char* filename, const std::string& directory, const std::string& type);
 	~Texture();
 
 	void Bind(unsigned int slot = 0) const;
