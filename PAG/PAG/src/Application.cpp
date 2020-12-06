@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "Model.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
@@ -155,25 +154,25 @@ int main(void)
 		//
 		//};
 
-		std::vector<unsigned int> indecies = {
-			0, 1, 2,
-			2, 3, 0,
-
-			4, 5, 6,
-			6, 7, 4,
-
-			8, 10, 9,
-			10, 11, 9,
-
-			12,15,14,
-			14,13,15,
-
-			16,17,18,
-			18,19,16,
-
-			20,21,22,
-			22,23,20
-		};
+		//std::vector<unsigned int> indecies = {
+		//	0, 1, 2,
+		//	2, 3, 0,
+		//
+		//	4, 5, 6,
+		//	6, 7, 4,
+		//
+		//	8, 10, 9,
+		//	10, 11, 9,
+		//
+		//	12,15,14,
+		//	14,13,15,
+		//
+		//	16,17,18,
+		//	18,19,16,
+		//
+		//	20,21,22,
+		//	22,23,20
+		//};
 		
 		
 		//VertexArray vao;
@@ -181,10 +180,6 @@ int main(void)
 		//VertexBufferLayout layout;
 		//layout.Push<float>(3);
 		//layout.Push<float>(2);
-		
-		//VertexBufferLayout layout;
-		//layout.Push<Vertex>(3);
-		//layout.Push<Vertex>(2);
 
 		//VertexBuffer vbo(vertices);
 		//VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
@@ -192,20 +187,9 @@ int main(void)
 		
 		//IndexBuffer ibo(indecies, 36);
 
-		//Shader shader("res/shaders/1.model_loading.vs", "res/shaders/1.model_loading.fs");
 		Shader shader("res/shaders/Basic.shader");
 		//shader.Bind();
-		Model backpack("res/models/nanosuit/nanosuit.obj");
-		//Model suit("res/models/backpack/backpack.obj");
-
-		//SceneNode root(NULL, glm::vec3(0.0f), glm::vec3(0.0f));
-		//SceneNode child1(&backpack, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-		//SceneNode child2(&suit, glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.2f));
-		
-		//Transform test(glm::vec3(0.0f), glm::vec3(1.0f));
-		//Transform test1(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.5f));
-		//root._worldTransform = test;
-		//child._localTransform = test1;
+		Model backpack("res/models/planets/moon2.obj");
 
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f), backpack);
 		SceneNode child(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(0.5f), backpack);
@@ -213,16 +197,6 @@ int main(void)
 		root.AddChild(&child);
 		child.AddChild(&child1);
 		root.calculateWorld(&root, root._worldPosition);
-
-		//std::vector<Texture> textures;
-		//Texture texture("res/textures/hollow-knight.png", "texture_diff");
-		//textures.push_back(texture);
-		//Mesh mesh(vertices, indecies, textures);
-		//texture.Bind(0);
-		//shader.setUniform1i("u_Texture", 0);
-		//shader.Unbind();
-		//mesh.Draw(shader);
-		//Renderer renderer;
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -233,25 +207,13 @@ int main(void)
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 		ImVec4 texture_color = ImVec4(1.0f, 0.3f, 0.2f, 1.0f);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 model1 = glm::mat4(1.0f);
-		model1 = glm::translate(model1, glm::vec3(10.0f, 10.0f, 0.0f));
-		model1 = glm::scale(model1, glm::vec3(0.2f));
-
-		glm::mat4 mvp = glm::mat4(1.0f);
-
 		bool isWireFrame = false;
 		int depth = 0;
 		glm::vec3 rot = glm::vec3(0.0f);
 		glm::vec3 currentRot = glm::vec3(0.0f);
 
 		root._localPosition = glm::rotate(root._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
-		//root._localPosition = glm::scale(root._localPosition, glm::vec3(0.5f));
 		
-		drawingData data;
-
-		glm::mat4 camera = glm::mat4(1.0f);
-		camera = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -263,8 +225,6 @@ int main(void)
 			/* Render here */
 
 			Renderer::Clear();
-			//glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			shader.Bind();
 			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
@@ -275,65 +235,13 @@ int main(void)
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
-			Rotate(currentRot, rot, camera);
-			//root.model = glm::rotate(root.model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
-			//root.calculateWorld(&root);
-			//child._localPosition = glm::rotate(child._localPosition, 0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
-			//child1._localPosition = glm::rotate(child1._localPosition, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
 			root.calculateWorld(&root, root._worldPosition);
 			root.Draw(shader);
-			//model = glm::mat4(1.0f);
-			//model = glm::translate(model, glm::vec3(0.0f));
-			//model = glm::scale(model, glm::vec3(1.0f));
-			//model = glm::rotate_slow(model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
-			//shader.SetUniformMat4f("model", model);
-			//shader.Bind();
-			//root.model = glm::rotate(root.model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
-			//child1.Draw(shader);
-			//for (unsigned int i = 0; i < root.children.size(); i++)
-			//{
-			//	
-			//	root.children[i].calculateWorld(root);
-			//	root.children[i].Draw(shader);
-			//}
-			//mvp = projection * view * model;
-			//sceneNodes[0].Draw(shader);
-			//model *= glm::vec4(0.0001f, 0.0001f, 0.0f, 1.0f);
-			//sceneNodes[1].Draw(shader);
-			//shader.SetUniformMat4f("u_MVP", mvp);
-			//backpack.Draw(shader);
-			//for (unsigned int i = 0; i < sceneNodes.size(); i++)
-			//{
-			//	sceneNodes[i].Draw(shader);
-			//}
-			{
-			//	Menger(depth, glm::vec3(0.0f), glm::vec3(1.0f), data);
-			//	shader.Bind();
-			//	//shader.SetUniform4f("u_Color", texture_color.x, texture_color.y, texture_color.z, texture_color.w);
-			//
-				if (isWireFrame)
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				else
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			//
-			//	//for (int i = 0; i < data.newPositions.size(); i++)
-			//	//{
-			//	//	model = glm::mat4(1.0f);
-			//	//	model = glm::translate(model, data.newPositions[i]);
-			//	//	model = glm::scale(model, data.newScales[i]);
-			//	//	glm::mat4 mvp = glm::mat4(1.0f);
-			//	//	mvp = projection * view * model;
-			//	//	shader.SetUniformMat4f("u_MVP", mvp);
-			//	//
-			//	//	//renderer.Draw(vao, ibo, shader);
-			//	//	//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
-			//	//}
-			//	//data.clearData();
-			//	//glm::mat4 mvp = projection * view * model;
-			//	//shader.SetUniformMat4f("u_MVP", mvp);
-			//	//renderer.Draw(mesh.VAO, mesh.GetIBO(), shader);
-			//	backpack.Draw(shader);
-			}
+			
+			if (isWireFrame)
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			else
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			{
 				ImGui::Begin("Hello, world!");                
