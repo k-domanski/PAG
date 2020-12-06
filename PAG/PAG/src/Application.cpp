@@ -189,14 +189,43 @@ int main(void)
 
 		Shader shader("res/shaders/Basic.shader");
 		//shader.Bind();
-		Model backpack("res/models/planets/moon2.obj");
 
-		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f), backpack);
-		SceneNode child(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(0.5f), backpack);
-		SceneNode child1(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.3f), backpack);
-		root.AddChild(&child);
-		child.AddChild(&child1);
-		root.calculateWorld(&root, root._worldPosition);
+		/*models init*/
+		Model backpack("res/models/planets/moon2.obj");
+		Model s("res/models/planets/sun/Sun1.obj");
+		Model p1("res/models/planets/planet1.obj");
+		Model p2("res/models/planets/planet2.obj");
+		Model p3("res/models/planets/planet3.obj");
+		Model p4("res/models/planets/planet4.obj");
+		Model p5("res/models/planets/planet5.obj");
+		Model p6("res/models/planets/planet6.obj");
+		Model m1("res/models/planets/Moon.obj");
+		Model m2("res/models/planets/moon1.obj");
+		Model m3("res/models/planets/moon2.obj");
+
+
+
+		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s);
+		SceneNode planet1(glm::vec3(2.0f, 0.0f, 0.0f),glm::vec3(1.0f), p1);
+		SceneNode planet2(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2);
+		SceneNode planet3(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3);
+		SceneNode planet4(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4);
+		SceneNode planet5(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), p5);
+		SceneNode planet6(glm::vec3(35.0f, 0.0f, 0.0f), glm::vec3(1.0f), p6);
+		SceneNode moon1(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m1);
+		SceneNode moon2(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f), m2);
+		SceneNode moon3(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m3);
+
+		sun.AddChild(&planet1);
+		sun.AddChild(&planet2);
+		sun.AddChild(&planet3);
+		sun.AddChild(&planet4);
+		sun.AddChild(&planet5);
+		sun.AddChild(&planet6);
+
+		planet5.AddChild(&moon1);
+		planet6.AddChild(&moon2);
+		planet6.AddChild(&moon3);
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -212,7 +241,7 @@ int main(void)
 		glm::vec3 rot = glm::vec3(0.0f);
 		glm::vec3 currentRot = glm::vec3(0.0f);
 
-		root._localPosition = glm::rotate(root._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		sun._localPosition = glm::rotate(sun._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 		
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
@@ -235,8 +264,8 @@ int main(void)
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
-			root.calculateWorld(&root, root._worldPosition);
-			root.Draw(shader);
+			sun.calculateWorld(&sun, sun._worldPosition);
+			sun.Draw(shader);
 			
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
