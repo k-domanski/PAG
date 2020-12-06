@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "MeshTest.h"
 #include "ModelTest.h"
+#include "SceneNode.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -194,8 +195,25 @@ int main(void)
 		//Shader shader("res/shaders/1.model_loading.vs", "res/shaders/1.model_loading.fs");
 		Shader shader("res/shaders/Basic.shader");
 		//shader.Bind();
-		Model backpack("res/models/backpack/backpack.obj");
-		//Model backpack("res/models/nanosuit/nanosuit.obj");
+		Model backpack("res/models/nanosuit/nanosuit.obj");
+		//Model suit("res/models/backpack/backpack.obj");
+
+		//SceneNode root(NULL, glm::vec3(0.0f), glm::vec3(0.0f));
+		//SceneNode child1(&backpack, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+		//SceneNode child2(&suit, glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.2f));
+		
+		//Transform test(glm::vec3(0.0f), glm::vec3(1.0f));
+		//Transform test1(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.5f));
+		//root._worldTransform = test;
+		//child._localTransform = test1;
+
+		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f), backpack);
+		SceneNode child(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(0.5f), backpack);
+		SceneNode child1(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.3f), backpack);
+		root.AddChild(&child);
+		child.AddChild(&child1);
+		root.calculateWorld(&root, root._worldPosition);
+
 		//std::vector<Texture> textures;
 		//Texture texture("res/textures/hollow-knight.png", "texture_diff");
 		//textures.push_back(texture);
@@ -216,6 +234,9 @@ int main(void)
 		ImVec4 texture_color = ImVec4(1.0f, 0.3f, 0.2f, 1.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 model1 = glm::mat4(1.0f);
+		model1 = glm::translate(model1, glm::vec3(10.0f, 10.0f, 0.0f));
+		model1 = glm::scale(model1, glm::vec3(0.2f));
 
 		glm::mat4 mvp = glm::mat4(1.0f);
 
@@ -224,6 +245,9 @@ int main(void)
 		glm::vec3 rot = glm::vec3(0.0f);
 		glm::vec3 currentRot = glm::vec3(0.0f);
 
+		root._localPosition = glm::rotate(root._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		//root._localPosition = glm::scale(root._localPosition, glm::vec3(0.5f));
+		
 		drawingData data;
 
 		glm::mat4 camera = glm::mat4(1.0f);
@@ -252,14 +276,36 @@ int main(void)
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
 			Rotate(currentRot, rot, camera);
-			model = glm::translate(model, glm::vec3(0.0f));
-			model = glm::scale(model, glm::vec3(1.0f));
-			model = glm::rotate_slow(model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
-			shader.SetUniformMat4f("model", model);
+			//root.model = glm::rotate(root.model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+			//root.calculateWorld(&root);
+			//child._localPosition = glm::rotate(child._localPosition, 0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
+			//child1._localPosition = glm::rotate(child1._localPosition, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
+			root.calculateWorld(&root, root._worldPosition);
+			root.Draw(shader);
+			//model = glm::mat4(1.0f);
+			//model = glm::translate(model, glm::vec3(0.0f));
+			//model = glm::scale(model, glm::vec3(1.0f));
+			//model = glm::rotate_slow(model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+			//shader.SetUniformMat4f("model", model);
 			//shader.Bind();
-			mvp = projection * view * model;
+			//root.model = glm::rotate(root.model, 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+			//child1.Draw(shader);
+			//for (unsigned int i = 0; i < root.children.size(); i++)
+			//{
+			//	
+			//	root.children[i].calculateWorld(root);
+			//	root.children[i].Draw(shader);
+			//}
+			//mvp = projection * view * model;
+			//sceneNodes[0].Draw(shader);
+			//model *= glm::vec4(0.0001f, 0.0001f, 0.0f, 1.0f);
+			//sceneNodes[1].Draw(shader);
 			//shader.SetUniformMat4f("u_MVP", mvp);
-			backpack.Draw(shader);
+			//backpack.Draw(shader);
+			//for (unsigned int i = 0; i < sceneNodes.size(); i++)
+			//{
+			//	sceneNodes[i].Draw(shader);
+			//}
 			{
 			//	Menger(depth, glm::vec3(0.0f), glm::vec3(1.0f), data);
 			//	shader.Bind();
