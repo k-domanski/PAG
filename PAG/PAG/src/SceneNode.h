@@ -15,8 +15,6 @@ public:
 
 	void Draw(Shader& shader)
 	{
-		//glm::mat4 test = _localScale * _worldPosition;
-		//_worldPosition = test;
 		shader.SetUniformMat4f("model", _worldPosition * _localScale );
 		_model.Draw(shader);
 		

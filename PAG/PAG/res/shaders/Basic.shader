@@ -35,3 +35,11 @@ void main()
 	color = texture(texture_diffuse1, v_TexCoord);
 	//color = texColor * color;
 };
+
+#shader geometry
+#version 330 core
+
+void main()
+{
+
+};
