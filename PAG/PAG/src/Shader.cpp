@@ -5,11 +5,15 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(const std::string& filepath)
-	:m_RendererID(0), m_Filepath(filepath)
+Shader::Shader(const std::string& filepath, int ID)
+	:m_RendererID(ID), m_Filepath(filepath)
 {
 	ShaderProgramSource shaderSource = ParseShader(filepath);
 	m_RendererID = CreateShader(shaderSource.VertexSource, shaderSource.FragmentSource, shaderSource.GeometrySource);
+}
+
+Shader::Shader(const std::string& filepath, bool gs)
+{
 }
 
 Shader::~Shader()

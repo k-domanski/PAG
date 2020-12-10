@@ -18,6 +18,7 @@
 #include "MeshTest.h"
 #include "ModelTest.h"
 #include "SceneNode.h"
+#include <math.h>
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -176,21 +177,34 @@ int main(void)
 		
 		std::vector<float> points =
 		{
-			0.0f,  0.0f, 0.2f, 0.2f, 22.0f
+			0.0f,  0.0f, 0.0f,
 			// 0.5f, -0.5f, 0.2f,-0.2f
 			// 0.5f,  0.5f, -0.2f,0.2f,
 			//-0.5f, -0.5f, -0.2f, -0.2f
 		};
+		
+		
+			
+		std::vector<float> orbits;
+		for (unsigned int i = 0; i < 2000; i++)
+		{
+			float angle = (float)(3.14f / 2.0f - i * (3.14f / 1000));
+			float x = std::sinf(angle);
+			float z = std::cosf(angle);
+			orbits.push_back(x);
+			orbits.push_back(0.0f);
+			orbits.push_back(z);
+
+		}
+		
 
 		VertexArray VAO;
 		VertexBufferLayout layout;
-		layout.Push<float>(2);
-		layout.Push<float>(2);
-		layout.Push<float>(1);
-		VertexBuffer vbo(points, 1 * 5 * sizeof(float));
+		layout.Push<float>(3);
+		VertexBuffer vbo(orbits, orbits.size()*sizeof(float));
 		VAO.AddBuffer(vbo, layout);
-		Shader test("res/shaders/GeometryTest.shader");
-		test.Bind();
+		Shader test("res/shaders/Test.shader", 1);
+		//test.Bind();
 		//VertexArray vao;
 		
 		//VertexBufferLayout layout;
@@ -203,43 +217,42 @@ int main(void)
 		
 		//IndexBuffer ibo(indecies, 36);
 
-		//Shader shader("res/shaders/Basic.shader");
-		////shader.Bind();
-		//
-		///*models init*/
-		//Model backpack("res/models/planets/moon2.obj");
-		//Model s("res/models/planets/sun/Sun1.obj");
-		//Model p1("res/models/planets/planet2.obj");
-		//Model p2("res/models/planets/planet3.obj");
-		//Model p3("res/models/planets/planet5.obj");
-		//Model p4("res/models/planets/planet6.obj");
-		//Model m1("res/models/planets/Moon.obj");
-		//Model m2("res/models/planets/moon1.obj");
-		//Model m3("res/models/planets/moon2.obj");
-		//Model m4("res/models/planets/planet1.obj");
-		//Model m5("res/models/planets/planet4.obj");
-		//
-		///*Scene graph init*/
-		//SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s);
-		//SceneNode planet1(glm::vec3(5.0f, 5.0f, 0.0f),glm::vec3(1.0f), p1);
-		////SceneNode planet2(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2);
-		////SceneNode planet3(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3);
-		////SceneNode planet4(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4);
-		////SceneNode planet5(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), p5);
-		////SceneNode planet6(glm::vec3(35.0f, 0.0f, 0.0f), glm::vec3(1.0f), p6);
-		//SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f), m1);
-		//SceneNode moon2(glm::vec3(3.0f, 3.0f, 0.0f), glm::vec3(1.0f), m2);
-		//SceneNode moon3(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m3);
-		//SceneNode moon4(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m4);
-		//SceneNode moon5(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m5);
-		//
-		//sun.AddChild(&planet1);
-		////sun.AddChild(&planet2);
-		////sun.AddChild(&planet3);
-		////sun.AddChild(&planet4);
-		//planet1.AddChild(&moon1);
-		////planet1.AddChild(&moon2);
-
+		Shader shader("res/shaders/Basic.shader", 0);
+		//shader.Bind();
+		
+		/*models init*/
+		Model backpack("res/models/planets/moon2.obj");
+		Model s("res/models/planets/sun/Sun1.obj");
+		Model p1("res/models/planets/planet2.obj");
+		Model p2("res/models/planets/planet3.obj");
+		Model p3("res/models/planets/planet5.obj");
+		Model p4("res/models/planets/planet6.obj");
+		Model m1("res/models/planets/Moon.obj");
+		Model m2("res/models/planets/moon1.obj");
+		Model m3("res/models/planets/moon2.obj");
+		Model m4("res/models/planets/planet1.obj");
+		Model m5("res/models/planets/planet4.obj");
+		
+		/*Scene graph init*/
+		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s);
+		SceneNode planet1(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(1.0f), p1);
+		//SceneNode planet2(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2);
+		//SceneNode planet3(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3);
+		//SceneNode planet4(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4);
+		//SceneNode planet5(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), p5);
+		//SceneNode planet6(glm::vec3(35.0f, 0.0f, 0.0f), glm::vec3(1.0f), p6);
+		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f), m1);
+		SceneNode moon2(glm::vec3(3.0f, 3.0f, 0.0f), glm::vec3(1.0f), m2);
+		SceneNode moon3(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m3);
+		SceneNode moon4(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m4);
+		SceneNode moon5(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f), m5);
+		
+		sun.AddChild(&planet1);
+		//sun.AddChild(&planet2);
+		//sun.AddChild(&planet3);
+		//sun.AddChild(&planet4);
+		planet1.AddChild(&moon1);
+		//planet1.AddChild(&moon2);
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -254,8 +267,11 @@ int main(void)
 		int depth = 0;
 		glm::vec3 rot = glm::vec3(0.0f);
 		glm::vec3 currentRot = glm::vec3(0.0f);
-
-		//sun._localPosition = glm::rotate(sun._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		for (auto& vert : orbits)
+		{
+			vert *= 5.0f;
+		}
+		sun._localPosition = glm::rotate(sun._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 		//planet1._localPosition = glm::rotate(planet1._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
@@ -268,10 +284,12 @@ int main(void)
 			/* Render here */
 
 			Renderer::Clear();
-			//shader.Bind();
-			test.Bind();
-			VAO.Bind();
-			glDrawArrays(GL_POINTS, 0, 20);
+			shader.Bind();
+			//test.Bind();
+			//VAO.Bind();
+			//glDrawArrays(GL_POINTS, 0, 20);
+			//VAO.Unbind();
+			//test.Unbind();
 			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
 
@@ -279,11 +297,30 @@ int main(void)
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-			//shader.SetUniformMat4f("projection", projection);
-			//shader.SetUniformMat4f("view", view);
-			//planet1._localPosition = glm::rotate(planet1._localPosition, 0.01f, glm::vec3(1.0f, 1.0f, 0.0f));
-			//sun.calculateWorld(&sun, sun._worldPosition);
-			//sun.Draw(shader);
+			shader.Bind();
+			shader.SetUniformMat4f("projection", projection);
+			shader.SetUniformMat4f("view", view);
+			planet1._localPosition = glm::rotate(planet1._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+			sun.calculateWorld(&sun, sun._worldPosition);
+			sun.Draw(shader);
+			shader.Unbind();
+			
+			
+			
+			for (unsigned int i = 1; i < 6; i++)
+			{
+				VAO.Bind();
+				test.Bind();
+				glm::mat4 omodel = glm::mat4(1.0f);
+				omodel = glm::scale(omodel, glm::vec3(5.0f * i, 0.0f, 5.0f * i));
+				test.SetUniformMat4f("model", omodel);
+				test.SetUniformMat4f("projection", projection);
+				test.SetUniformMat4f("view", view);
+				glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
+				test.Unbind();
+				VAO.Unbind();
+			}
+			
 			
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

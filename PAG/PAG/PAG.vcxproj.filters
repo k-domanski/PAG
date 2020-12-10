@@ -137,5 +137,6 @@
     <None Include="res\shaders\1.model_loading.vs" />
     <None Include="res\shaders\1.model_loading.fs" />
     <None Include="res\shaders\GeometryTest.shader" />
+    <None Include="res\shaders\Test.shader" />
   </ItemGroup>
 </Project>

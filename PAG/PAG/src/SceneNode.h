@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "ModelTest.h"
+#include <glad/glad.h>
 
 class SceneNode
 {
@@ -32,6 +33,7 @@ public:
 
 	void calculateWorld(SceneNode* currentNode, glm::mat4 parrentWorld)
 	{
+		_parentWorld = parrentWorld;
 		glm::mat4 world = parrentWorld * currentNode->_localPosition;
 
 		_worldPosition = world;
@@ -40,12 +42,12 @@ public:
 			children[i]->calculateWorld(children[i],world);
 		}
 	}
-
+	
 	Model _model;
 	std::vector<SceneNode*> children;
 	glm::mat4 _localPosition = glm::mat4(1.0f);
 	glm::mat4 _localScale = glm::mat4(1.0f);
 	glm::mat4 _worldPosition = glm::mat4(1.0f);
+	glm::mat4 _parentWorld = glm::mat4(1.0f);
 	int numOfChildren = 0;
-	
 };

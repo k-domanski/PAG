@@ -5,11 +5,15 @@ layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aData;
 layout(location = 2) in float aSeg;
 
+uniform mat4 model1;
+uniform mat4 view1;
+uniform mat4 projection1;
+
 out vec2 data;
 out int okon;
 void main()
 {
-	gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+	gl_Position = projection1 * view1 * model1 * vec4(aPos.x, 0.0, aPos.y, 1.0);
 	data = aData;
 	okon = int(aSeg);
 };
@@ -29,7 +33,7 @@ void main()
 #version 330 core
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 50) out;
+layout(line_strip, max_vertices = 50) out;
 
 in vec2 data[];
 in int okon[];
@@ -43,9 +47,9 @@ void circle(vec4 position, vec2 r)
 		float px = r.x * cos(theta);
 		float py = r.x * sin(theta);
 
-		gl_Position = position;
-		EmitVertex();
-		gl_Position =  position + vec4(px, py, 0.0, 0.0);
+		//gl_Position = position;
+		//EmitVertex();
+		gl_Position =  position + vec4(px, 0.0, py, 0.0);
 		EmitVertex();
 	}
 	EndPrimitive();
