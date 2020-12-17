@@ -249,21 +249,23 @@ int main(void)
 		//SceneNode planet5(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), p5);
 		//SceneNode planet6(glm::vec3(35.0f, 0.0f, 0.0f), glm::vec3(1.0f), p6);
 		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f), m1);
-		//SceneNode moon2(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f), m2);
-		//SceneNode moon3(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m3);
-		//SceneNode moon4(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m4);
-		//SceneNode moon5(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m5);
-		
+		SceneNode moon2(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f), m2);
+		SceneNode moon3(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m3);
+		SceneNode moon4(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m4);
+		SceneNode moon5(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m5);
+		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao);
 		sun.AddChild(&planet1);
 		sun.AddChild(&planet2);
 		sun.AddChild(&planet3);
 		sun.AddChild(&planet4);
+		sun.AddChild(&cylinder);
 
 		std::vector<SceneNode*> planets;
 		planets.push_back(&planet1);
 		planets.push_back(&planet2);
 		planets.push_back(&planet3);
 		planets.push_back(&planet4);
+		planets.push_back(&cylinder);
 		planet1.AddChild(&moon1);
 
 		ImGui::CreateContext();
@@ -303,7 +305,16 @@ int main(void)
 			//test.Unbind();
 			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
-
+			geometry.Bind();
+			glm::mat4 omodel = glm::mat4(1.0f);
+			omodel = glm::translate(omodel, glm::vec3(5.0f, 0.0, 0.0));
+			//omodel = glm::rotate(omodel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+			omodel = glm::scale(omodel, glm::vec3(1.0f, 1.0f, 1.0f));
+			//geometry.SetUniformMat4f("model1", omodel);
+			geometry.SetUniformMat4f("projection1", projection);
+			geometry.SetUniformMat4f("view1", view);
+			geometry.setUniform1i("depth", depth);
+			geometry.Unbind();
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
@@ -313,12 +324,12 @@ int main(void)
 			shader.SetUniformMat4f("view", view);
 			planet1._localPosition = glm::rotate(planet1._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 			sun.calculateWorld(&sun, sun._worldPosition);
-			//sun.Draw(shader);
+			sun.Draw(shader);
 			shader.Unbind();
 			
 			
 			/*PLANET ORBITS*/
-			for (unsigned int i = 1; i < 2; i++)
+			for (unsigned int i = 1; i < planets.size() +1; i++)
 			{
 				VAO.Bind();
 				test.Bind();
@@ -351,19 +362,19 @@ int main(void)
 			//	}
 			//	
 			//}
-			vao.Bind();
-			geometry.Bind();
-			glm::mat4 omodel = glm::mat4(1.0f);
-			omodel = glm::translate(omodel, glm::vec3(5.0f, 0.0, 0.0));
-			//omodel = glm::rotate(omodel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-			omodel = glm::scale(omodel, glm::vec3(1.0f, 1.0f, 1.0f));
-			geometry.SetUniformMat4f("model1", omodel);
-			geometry.SetUniformMat4f("projection1", projection);
-			geometry.SetUniformMat4f("view1", view);
-			geometry.setUniform1i("depth", depth);
-			glDrawArrays(GL_POINTS, 0, 36);
-			geometry.Unbind();
-			vao.Unbind();
+			//vao.Bind();
+			//geometry.Bind();
+			//glm::mat4 omodel = glm::mat4(1.0f);
+			//omodel = glm::translate(omodel, glm::vec3(5.0f, 0.0, 0.0));
+			////omodel = glm::rotate(omodel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+			//omodel = glm::scale(omodel, glm::vec3(1.0f, 1.0f, 1.0f));
+			//geometry.SetUniformMat4f("model1", omodel);
+			//geometry.SetUniformMat4f("projection1", projection);
+			//geometry.SetUniformMat4f("view1", view);
+			//geometry.setUniform1i("depth", depth);
+			//glDrawArrays(GL_POINTS, 0, 36);
+			//geometry.Unbind();
+			//vao.Unbind();
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

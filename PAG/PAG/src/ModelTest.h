@@ -14,7 +14,7 @@ public:
 	std::vector<Mesh> meshes;
 	std::string directory;
 	bool gammaCorrection;
-
+	Model() {}
 	Model(const std::string& path, bool gamma = false)
 		:gammaCorrection(gamma)
 	{
