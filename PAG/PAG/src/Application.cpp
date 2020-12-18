@@ -24,7 +24,7 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-Camera gCamera(glm::vec3(0.0f, 0.0f, 20.0f));
+Camera gCamera(glm::vec3(0.0f, 30.0f, 30.0f));
 float gLastX = SCR_WIDTH / 2.0f;
 float gLastY = SCR_HEIGHT / 2.0f;
 bool gFirstMouse = true;
@@ -44,8 +44,6 @@ struct drawingData
 	}
 };
 
-void Menger(int n, const glm::vec3& position, const glm::vec3& scale, drawingData& data);
-void Rotate(glm::vec3& current, const glm::vec3& rotation, glm::mat4& view);
 void ProcessInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -89,100 +87,10 @@ int main(void)
 	{
 		glEnable(GL_DEPTH_TEST);
 		stbi_set_flip_vertically_on_load(true);
-		//std::vector<float> vertices = {
-		//	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//0
-		//	 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//1
-		//	 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//2
-		//	-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//3
-		//
-		//	-0.5f, -0.5f, 0.5f,  0.0f, 0.0f,		//4
-		//	 0.5f, -0.5f, 0.5f,  1.0f, 0.0f,		//5
-		//	 0.5f,  0.5f, 0.5f,  1.0f, 1.0f,		//6
-		//	-0.5f,  0.5f, 0.5f,  0.0f, 1.0f,		//7
-		//
-		//	 0.5f, -0.5f, -0.5f, 0.0f, 0.0f,	//8
-		//	 0.5f,  0.5f, -0.5f, 0.0f, 1.0f,	//9
-		//	 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,	//10
-		//	 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//11
-		//
-		//	-0.5f, -0.5f, -0.5f, 1.0f, 0.0f,	//0
-		//	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
-		//	-0.5f,  0.5f, -0.5f, 1.0f, 1.0f,	//3
-		//	-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,	//4
-		//
-		//	-0.5f,  0.5f, -0.5f, 0.0f, 0.0f,	//3
-		//	 0.5f,  0.5f, -0.5f, 1.0f, 0.0f,	//2
-		//	 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,	//6
-		//	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,	//7
-		//
-		//	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-		//     0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-		//	 0.5f, -0.5f,  0.5f, 1.0f, 1.0f,
-		//	-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
-		//};
-
-		//std::vector<Vertex> vertices =
-		//{
-		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
-		//
-		//	Vertex({glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f, 0.5f), glm::vec2(1.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f,  0.5f, 0.5f), glm::vec2(0.0f, 1.0f)}),
-		//
-		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 1.0f)}),
-		//	Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-		//
-		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 0.0f)}),
-		//
-		//	Vertex({glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-		//
-		//	Vertex({glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f)}),
-		//	Vertex({glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f)}),
-		//	Vertex({glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f)}),
-		//
-		//};
-
-		//std::vector<unsigned int> indecies = {
-		//	0, 1, 2,
-		//	2, 3, 0,
-		//
-		//	4, 5, 6,
-		//	6, 7, 4,
-		//
-		//	8, 10, 9,
-		//	10, 11, 9,
-		//
-		//	12,15,14,
-		//	14,13,15,
-		//
-		//	16,17,18,
-		//	18,19,16,
-		//
-		//	20,21,22,
-		//	22,23,20
-		//};
 		
 		std::vector<float> points =
 		{
 			0.0f,  0.0f, 0.0f
-			//0.0f,  2.0f, 0.0f
-			//-0.5f,  0.0f, 0.0f,11.0f
-			// 0.5f, -0.5f, 0.2f,-0.2f
-			// 0.5f,  0.5f, -0.2f,0.2f,
-			//-0.5f, -0.5f, -0.2f, -0.2f
 		};
 		
 		VertexBuffer vboCillinder(points, points.size() * sizeof(float));
@@ -211,21 +119,7 @@ int main(void)
 		VertexBuffer vbo(orbits, orbits.size()*sizeof(float));
 		VAO.AddBuffer(vbo, layout);
 		Shader test("res/shaders/Test.shader", 1);
-		//test.Bind();
-		//VertexArray vao;
-		
-		//VertexBufferLayout layout;
-		//layout.Push<float>(3);
-		//layout.Push<float>(2);
-
-		//VertexBuffer vbo(vertices);
-		//VertexBuffer vbo(vertices, 5 * 24 * sizeof(float));
-		//vao.AddBuffer(vbo, layout);
-		
-		//IndexBuffer ibo(indecies, 36);
-
 		Shader shader("res/shaders/Basic.shader", 0);
-		//shader.Bind();
 		
 		/*models init*/
 		Model backpack("res/models/planets/moon2.obj");
@@ -239,26 +133,36 @@ int main(void)
 		Model m3("res/models/planets/moon2.obj");
 		Model m4("res/models/planets/planet1.obj");
 		Model m5("res/models/planets/planet4.obj");
+		Model m6("res/models/planets/planet4.obj");
 		
 		/*Scene graph init*/
-		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s);
-		SceneNode planet1(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(1.0f), p1);
-		SceneNode planet2(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2);
-		SceneNode planet3(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3);
-		SceneNode planet4(glm::vec3(20.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4);
-		//SceneNode planet5(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), p5);
-		//SceneNode planet6(glm::vec3(35.0f, 0.0f, 0.0f), glm::vec3(1.0f), p6);
-		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f), m1);
-		SceneNode moon2(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f), m2);
-		SceneNode moon3(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m3);
-		SceneNode moon4(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m4);
-		SceneNode moon5(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f), m5);
-		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao);
+		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s, 0.01f, 0.0f);
+		SceneNode planet1(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(1.0f), p1, 0.01f, 30.0f);
+		SceneNode planet2(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2, 0.03f, 45.0f);
+		SceneNode planet3(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3, 0.02f, 50.0f);
+		SceneNode planet4(glm::vec3(20.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4, 0.04f, 65.0f);
+		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m1, 0.02f, 75.0f);
+		SceneNode moon2(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m2, 0.02f, 60.0f);
+		SceneNode moon3(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m3, 0.02f, 35.0f);
+		SceneNode moon4(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m4, 0.02f, 25.0f);
+		SceneNode moon5(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.5f), m5, 0.02f, 15.0f);
+		SceneNode moon6(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m6, 0.02f, 85.0f);
+		SceneNode moon7(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m4, 0.02f, 55.0f);
+		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao, 0.02f);
+		
 		sun.AddChild(&planet1);
 		sun.AddChild(&planet2);
 		sun.AddChild(&planet3);
 		sun.AddChild(&planet4);
 		sun.AddChild(&cylinder);
+		
+		planet1.AddChild(&moon1);
+		planet1.AddChild(&moon7);
+		planet2.AddChild(&moon2);
+		planet3.AddChild(&moon3);
+		planet3.AddChild(&moon6);
+		planet4.AddChild(&moon4);
+		planet4.AddChild(&moon5);
 
 		std::vector<SceneNode*> planets;
 		planets.push_back(&planet1);
@@ -266,7 +170,7 @@ int main(void)
 		planets.push_back(&planet3);
 		planets.push_back(&planet4);
 		planets.push_back(&cylinder);
-		planet1.AddChild(&moon1);
+		
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -275,17 +179,11 @@ int main(void)
 		ImGui::StyleColorsDark();
 		
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-		ImVec4 texture_color = ImVec4(1.0f, 0.3f, 0.2f, 1.0f);
 
 		bool isWireFrame = false;
 		int depth = 1;
-		glm::vec3 rot = glm::vec3(0.0f);
-		glm::vec3 currentRot = glm::vec3(0.0f);
-		for (auto& vert : orbits)
-		{
-			vert *= 5.0f;
-		}
-		sun._localPosition = glm::rotate(sun._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		//sun._local.Position = glm::rotate(sun._local.Position, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		//glm::mat4 neewRot = glm::rotate(glm::mat4(1.0f), planet1._rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -296,21 +194,13 @@ int main(void)
 			ProcessInput(window);
 			/* Render here */
 
+			//planet1._worldPosition = glm::rotate(planet1._worldPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+			
 			Renderer::Clear();
 			shader.Bind();
-			//test.Bind();
-			//VAO.Bind();
-			//glDrawArrays(GL_POINTS, 0, 20);
-			//VAO.Unbind();
-			//test.Unbind();
 			glm::mat4 projection = glm::perspective(glm::radians(gCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
 			geometry.Bind();
-			glm::mat4 omodel = glm::mat4(1.0f);
-			omodel = glm::translate(omodel, glm::vec3(5.0f, 0.0, 0.0));
-			//omodel = glm::rotate(omodel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-			omodel = glm::scale(omodel, glm::vec3(1.0f, 1.0f, 1.0f));
-			//geometry.SetUniformMat4f("model1", omodel);
 			geometry.SetUniformMat4f("projection1", projection);
 			geometry.SetUniformMat4f("view1", view);
 			geometry.setUniform1i("depth", depth);
@@ -322,59 +212,68 @@ int main(void)
 			shader.Bind();
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
-			planet1._localPosition = glm::rotate(planet1._localPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
-			sun.calculateWorld(&sun, sun._worldPosition);
+			//for (auto& planet : planets)
+			//{
+			//	for (unsigned int i = 0; i < planet->numOfChildren; i++)
+			//	{
+			//
+			//		planet->children[i]->_local.Model = glm::rotate(planet->children[i]->_local.Model, planet->children[i]->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+			//	}
+			//	//glm::mat4 neewRot = glm::rotate(glm::mat4(1.0f), planet->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+			//	//planet->_local.Model = neewRot * planet->_local.Model;
+			//	//planet->_local.Model = glm::rotate(planet->_local.Model, planet->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+			//}
+			//planet1._local.Model = neewRot * planet1._local.Model;
+			sun.calculateWorld(&sun, sun._world, sun._local);
 			sun.Draw(shader);
 			shader.Unbind();
 			
 			
 			/*PLANET ORBITS*/
-			for (unsigned int i = 1; i < planets.size() +1; i++)
+			//for (unsigned int i = 1; i < planets.size() +1; i++)
+			//{
+			//	VAO.Bind();
+			//	test.Bind();
+			//	glm::mat4 omodel = glm::mat4(1.0f);
+			//	omodel = glm::scale(omodel, glm::vec3(5.0f * i, 0.0f, 5.0f * i));
+			//	test.SetUniformMat4f("model", omodel);
+			//	test.SetUniformMat4f("projection", projection);
+			//	test.SetUniformMat4f("view", view);
+			//	glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
+			//	test.Unbind();
+			//	VAO.Unbind();
+			//}
+			
+			///*MOON ORBITS*/
+			for (auto& planet : planets)
 			{
 				VAO.Bind();
 				test.Bind();
 				glm::mat4 omodel = glm::mat4(1.0f);
-				omodel = glm::scale(omodel, glm::vec3(5.0f * i, 0.0f, 5.0f * i));
-				test.SetUniformMat4f("model", omodel);
+				omodel = glm::scale(omodel, glm::vec3(planet->_local.Model[3].x, 0.0f, planet->_local.Model[3].x));
+				test.SetUniformMat4f("model", sun._world.Model * omodel);
 				test.SetUniformMat4f("projection", projection);
 				test.SetUniformMat4f("view", view);
 				glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
 				test.Unbind();
 				VAO.Unbind();
+
+				for (unsigned int i = 0; i < planet->numOfChildren; i++)
+				{
+					VAO.Bind();
+					test.Bind();
+					glm::mat4 omodel = glm::mat4(1.0f);
+					float pos = planet->children[i]->_local.Model[3].x;
+					omodel = glm::scale(omodel, glm::vec3(pos, 0.0f, pos));
+					test.SetUniformMat4f("model", planet->_world.Model* omodel);
+					test.SetUniformMat4f("projection", projection);
+					test.SetUniformMat4f("view", view);
+					glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
+					test.Unbind();
+					VAO.Unbind();
+				}
+				
 			}
-			
-			///*MOON ORBITS*/
-			//for (auto& planet : planets)
-			//{
-			//	for (unsigned int i = 0; i < planet->numOfChildren; i++)
-			//	{
-			//		VAO.Bind();
-			//		test.Bind();
-			//		glm::mat4 omodel = glm::mat4(1.0f);
-			//		float pos = planet->children[i]->_localPosition[3].x;
-			//		omodel = glm::scale(omodel, glm::vec3(pos, 0.0f, pos));
-			//		test.SetUniformMat4f("model", planet->_worldPosition* omodel);
-			//		test.SetUniformMat4f("projection", projection);
-			//		test.SetUniformMat4f("view", view);
-			//		glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
-			//		test.Unbind();
-			//		VAO.Unbind();
-			//	}
-			//	
-			//}
-			//vao.Bind();
-			//geometry.Bind();
-			//glm::mat4 omodel = glm::mat4(1.0f);
-			//omodel = glm::translate(omodel, glm::vec3(5.0f, 0.0, 0.0));
-			////omodel = glm::rotate(omodel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-			//omodel = glm::scale(omodel, glm::vec3(1.0f, 1.0f, 1.0f));
-			//geometry.SetUniformMat4f("model1", omodel);
-			//geometry.SetUniformMat4f("projection1", projection);
-			//geometry.SetUniformMat4f("view1", view);
-			//geometry.setUniform1i("depth", depth);
-			//glDrawArrays(GL_POINTS, 0, 36);
-			//geometry.Unbind();
-			//vao.Unbind();
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -385,10 +284,8 @@ int main(void)
 				ImGui::Begin("Hello, world!");                
 
 				ImGui::Checkbox("Wireframe", &isWireFrame);
-				ImGui::SliderFloat3("rotation", (float*)& rot, -360.0f, 360.0f);
 				ImGui::SliderInt("Depth", &depth, 1, 20);
 				ImGui::ColorEdit3("clear color", (float*)& clear_color);
-				ImGui::ColorEdit3("texture color", (float*)& texture_color);
 
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 				ImGui::End();
@@ -409,58 +306,6 @@ int main(void)
 	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
-}
-
-void Menger(int n, const glm::vec3& position, const glm::vec3& scale, drawingData& data)
-{
-	glm::vec3 newPosition;
-	glm::vec3 newScale;
-
-	if (n == 0)
-	{
-		data.newPositions.push_back(position);
-		data.newScales.push_back(scale);
-	}
-	else
-	{
-		for (int i = -1; i < 2; i++)
-		{
-			for (int j = -1; j < 2; j++)
-			{
-				for (int k = -1; k < 2; k++)
-				{
-					if ((i * i + j * j) * (i * i + k * k) * (j * j + k * k) > 0)
-					{
-						newScale = scale * (1.0f / 3.0f);
-						newPosition = glm::vec3(position.x + i * newScale.x,
-							position.y + j * newScale.y,
-							position.z + k * newScale.z);
-
-						Menger(n - 1, newPosition, newScale, data);
-					}
-				}
-			}
-		}
-	}
-}
-
-void Rotate(glm::vec3 & current, const glm::vec3 & rotation, glm::mat4 & view)
-{
-	glm::vec3 change = glm::vec3(0.0f);
-	change = rotation - current;
-	glm::vec3 vec[] =
-	{
-		glm::vec3(-1.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, -1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, -1.0f)
-	};
-
-	for (int i = 0; i < 3; i++)
-	{
-		current[i] != rotation[i] ? view = glm::rotate_slow(view, glm::radians(change[i]), vec[i]) : view = glm::rotate(view, 0.0f, vec[i]);
-	}
-
-	current = rotation;
 }
 
 void ProcessInput(GLFWwindow * window)
