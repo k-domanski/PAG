@@ -125,52 +125,44 @@ int main(void)
 		Model backpack("res/models/planets/moon2.obj");
 		Model s("res/models/planets/sun/Sun1.obj");
 		Model p1("res/models/planets/planet2.obj");
-		//Model p2("res/models/planets/planet3.obj");
-		//Model p3("res/models/planets/planet5.obj");
-		//Model p4("res/models/planets/planet6.obj");
+		Model p2("res/models/planets/planet3.obj");
+		Model p3("res/models/planets/planet5.obj");
+		Model p4("res/models/planets/planet6.obj");
 		Model m1("res/models/planets/Moon.obj");
-		//Model m2("res/models/planets/moon1.obj");
-		//Model m3("res/models/planets/moon2.obj");
+		Model m2("res/models/planets/moon1.obj");
+		Model m3("res/models/planets/moon2.obj");
 		Model m4("res/models/planets/planet1.obj");
-		//Model m5("res/models/planets/planet4.obj");
-		//Model m6("res/models/planets/planet4.obj");
+		Model m5("res/models/planets/planet4.obj");
+		Model m6("res/models/planets/planet4.obj");
 		
 		/*Scene graph init*/
-		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s, 0.01f, 0.0f);
-		SceneNode planet1(glm::vec3(5.0f, 0.0f, 15.0f),glm::vec3(1.0f), p1, 0.01f, 30.0f);
-		//SceneNode planet2(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2, 0.03f, 45.0f);
-		//SceneNode planet3(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3, 0.02f, 50.0f);
-		//SceneNode planet4(glm::vec3(20.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4, 0.04f, 65.0f);
+		SceneNode sun(glm::vec3(0.0f), glm::vec3(1.0f), s, 0.0f, 0.0f);
+		SceneNode planet1(glm::vec3(5.0f, 0.0f, 0.0f),glm::vec3(1.0f), p1, 0.01f, 30.0f);
+		SceneNode planet2(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f), p2, 0.03f, 45.0f);
+		SceneNode planet3(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3, 0.02f, 50.0f);
+		SceneNode planet4(glm::vec3(20.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4, 0.04f, 65.0f);
 		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m1, 0.03f, 75.0f);
-		//SceneNode moon2(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m2, 0.02f, 60.0f);
-		//SceneNode moon3(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m3, 0.02f, 35.0f);
-		//SceneNode moon4(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m4, 0.02f, 25.0f);
-		//SceneNode moon5(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.5f), m5, 0.02f, 15.0f);
-		//SceneNode moon6(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m6, 0.02f, 85.0f);
+		SceneNode moon2(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m2, 0.02f, 60.0f);
+		SceneNode moon3(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m3, 0.02f, 35.0f);
+		SceneNode moon4(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m4, 0.02f, 25.0f);
+		SceneNode moon5(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.5f), m5, 0.02f, 15.0f);
+		SceneNode moon6(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m6, 0.02f, 85.0f);
 		SceneNode moon7(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m4, 0.05f, 55.0f);
-		//SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao, 0.02f);
+		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao, 0.02f);
 		
 		sun.AddChild(&planet1);
-		//sun.AddChild(&planet2);
-		//sun.AddChild(&planet3);
-		//sun.AddChild(&planet4);
-		//sun.AddChild(&cylinder);
+		sun.AddChild(&planet2);
+		sun.AddChild(&planet3);
+		sun.AddChild(&planet4);
+		sun.AddChild(&cylinder);
 		
 		planet1.AddChild(&moon1);
 		planet1.AddChild(&moon7);
-		//planet2.AddChild(&moon2);
-		//planet3.AddChild(&moon3);
-		//planet3.AddChild(&moon6);
-		//planet4.AddChild(&moon4);
-		//planet4.AddChild(&moon5);
-
-		std::vector<SceneNode*> planets;
-		planets.push_back(&planet1);
-		//planets.push_back(&planet2);
-		//planets.push_back(&planet3);
-		//planets.push_back(&planet4);
-		//planets.push_back(&cylinder);
-		
+		planet2.AddChild(&moon2);
+		planet3.AddChild(&moon3);
+		planet3.AddChild(&moon6);
+		planet4.AddChild(&moon4);
+		planet4.AddChild(&moon5);
 
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -181,9 +173,8 @@ int main(void)
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
 		bool isWireFrame = false;
+		bool isPaused = false;
 		int depth = 1;
-		//sun._local.Position = glm::rotate(sun._local.Position, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
-		//glm::mat4 neewRot = glm::rotate(glm::mat4(1.0f), planet1._rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -194,7 +185,6 @@ int main(void)
 			ProcessInput(window);
 			/* Render here */
 
-			//planet1._worldPosition = glm::rotate(planet1._worldPosition, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 			
 			Renderer::Clear();
 			shader.Bind();
@@ -212,80 +202,18 @@ int main(void)
 			shader.Bind();
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
-			//for (auto& planet : planets)
-			//{
-			//	for (unsigned int i = 0; i < planet->numOfChildren; i++)
-			//	{
-			//
-			//		planet->children[i]->_local.Model = glm::rotate(planet->children[i]->_local.Model, planet->children[i]->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-			//	}
-			//	//glm::mat4 neewRot = glm::rotate(glm::mat4(1.0f), planet->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-			//	//planet->_local.Model = neewRot * planet->_local.Model;
-			//	//planet->_local.Model = glm::rotate(planet->_local.Model, planet->_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-			//}
-			//planet1._local.Model = neewRot * planet1._local.Model;
-			glm::mat4 testMat = glm::rotate(glm::mat4(1.0), moon1._rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-		//_local.newRot = test * _local.newRot;
-			//planet1._local.newRot = testMat * planet1._local.newRot;
-			moon1._local.Model = testMat * moon1._local.Model;
-			glm::mat4 testMat1 = glm::rotate(glm::mat4(1.0), moon7._rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-			moon7._local.Model = testMat1 * moon7._local.Model;
-			glm::mat4 testMat2 = glm::rotate(glm::mat4(1.0), planet1._rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-			planet1._local.Model = testMat2 * planet1._local.Model;
-			sun.calculateWorld(&sun, sun._world, sun._local);
+			if (!isPaused)
+			{
+				sun.calculateWorld(&sun, sun.World(), sun.Local());
+			}
 			sun.Draw(shader);
 			shader.Unbind();
 			test.Bind();
 			test.SetUniformMat4f("projection", projection);
 			test.SetUniformMat4f("view", view);
 			test.Unbind();
-			sun.DrawOrbits(VAO, test, sun._world, orbits.size());
-			
-			/*PLANET ORBITS*/
-			//for (unsigned int i = 1; i < planets.size() +1; i++)
-			//{
-			//	VAO.Bind();
-			//	test.Bind();
-			//	glm::mat4 omodel = glm::mat4(1.0f);
-			//	omodel = glm::scale(omodel, glm::vec3(5.0f * i, 0.0f, 5.0f * i));
-			//	test.SetUniformMat4f("model", omodel);
-			//	test.SetUniformMat4f("projection", projection);
-			//	test.SetUniformMat4f("view", view);
-			//	glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
-			//	test.Unbind();
-			//	VAO.Unbind();
-			//}
-			
-			///*MOON ORBITS*/
-			//for (auto& planet : planets)
-			//{
-			//	VAO.Bind();
-			//	test.Bind();
-			//	glm::mat4 omodel = glm::mat4(1.0f);
-			//	omodel = glm::scale(omodel, glm::vec3(planet->_local.Model[3].x, 0.0f, planet->_local.Model[3].x));
-			//	test.SetUniformMat4f("model", sun._world.Model * omodel);
-			//	test.SetUniformMat4f("projection", projection);
-			//	test.SetUniformMat4f("view", view);
-			//	glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
-			//	test.Unbind();
-			//	VAO.Unbind();
-			//
-			//	for (unsigned int i = 0; i < planet->numOfChildren; i++)
-			//	{
-			//		VAO.Bind();
-			//		test.Bind();
-			//		glm::mat4 omodel = glm::mat4(1.0f);
-			//		float pos = planet->children[i]->_local.Model[3].x;
-			//		omodel = glm::scale(omodel, glm::vec3(pos, 0.0f, pos));
-			//		test.SetUniformMat4f("model", planet->_world.Model* omodel);
-			//		test.SetUniformMat4f("projection", projection);
-			//		test.SetUniformMat4f("view", view);
-			//		glDrawArrays(GL_LINE_LOOP, 0, orbits.size() / 3);
-			//		test.Unbind();
-			//		VAO.Unbind();
-			//	}
-			//	
-			//}
+
+			sun.DrawOrbits(VAO, test, sun.World(), orbits.size());
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -293,9 +221,10 @@ int main(void)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			{
-				ImGui::Begin("Hello, world!");                
+				ImGui::Begin("Hello, world!");
 
 				ImGui::Checkbox("Wireframe", &isWireFrame);
+				ImGui::Checkbox("Pause", &isPaused);
 				ImGui::SliderInt("Depth", &depth, 1, 20);
 				ImGui::ColorEdit3("clear color", (float*)& clear_color);
 
@@ -311,6 +240,10 @@ int main(void)
 
 			/* Poll for and process events */
 			glfwPollEvents();
+			
+			
+
+			
 		}
 	}
 	ImGui_ImplOpenGL3_Shutdown();

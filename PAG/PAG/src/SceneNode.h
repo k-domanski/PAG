@@ -6,12 +6,12 @@
 struct Transform
 {
 	glm::mat4 Model;
-	glm::mat4 newRot;
 };
 
 class SceneNode
 {
 public:
+
 	SceneNode(glm::vec3 pos, glm::vec3 scale, Model& model, float rotSpeed, float angle)
 		:_model(model), isGeometry(false), _rotationSpeed(rotSpeed)
 	{
@@ -26,6 +26,7 @@ public:
 	{
 		_local.Model = glm::scale(_local.Model, scale);
 		_local.Model = glm::translate(_local.Model, pos);
+		_radius = sqrtf((pos.x * pos.x) + (pos.z * pos.z));
 	}
 
 	void Draw(Shader& shader)
@@ -34,7 +35,7 @@ public:
 		{
 			vao.Bind();
 			geometry.Bind();
-			geometry.SetUniformMat4f("model1", _local.newRot * _world.Model);
+			geometry.SetUniformMat4f("model1", _world.Model);
 			glDrawArrays(GL_POINTS, 0, 36);
 			geometry.Unbind();
 			vao.Unbind();
@@ -60,8 +61,7 @@ public:
 
 	void calculateWorld(SceneNode* currentNode, Transform parrentWorld, Transform parrentLocal)
 	{
-		//glm::mat4 test = glm::rotate(glm::mat4(1.0), _rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-		//_local.newRot = test * _local.newRot;
+		RotateAroundParent();
 		_world.Model = parrentWorld.Model * _local.Model;
 		for (unsigned int i = 0; i < numOfChildren; i++)
 		{
@@ -69,7 +69,7 @@ public:
 		}
 	}
 
-	void DrawOrbits(VertexArray& VAO, Shader& shader, Transform& parentWorld, int count)
+	void DrawOrbits(VertexArray& VAO, Shader& shader, Transform parentWorld, int count)
 	{
 		VAO.Bind();
 		shader.Bind();
@@ -86,7 +86,10 @@ public:
 		}
 	}
 
+	inline const Transform& Local() const{ return _local; }
+	inline const Transform& World() const { return _world; }
 
+private:
 	Transform _local;
 	Transform _world;
 	Model _model;
@@ -97,4 +100,10 @@ public:
 	Shader geometry;
 	VertexArray vao;
 	bool isGeometry;
+
+	void RotateAroundParent()
+	{
+		glm::mat4 test = glm::rotate(glm::mat4(1.0f), _rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+		_local.Model = test * _local.Model;
+	}
 };
