@@ -23,7 +23,7 @@ void main()
 #version 330 core
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 200) out;
+layout(triangle_strip, max_vertices = 204) out;
 uniform mat4 model1;
 uniform mat4 view1;
 uniform mat4 projection1;
