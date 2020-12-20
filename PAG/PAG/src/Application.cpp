@@ -15,8 +15,8 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "Camera.h"
-#include "MeshTest.h"
-#include "ModelTest.h"
+#include "Mesh.h"
+#include "Model.h"
 #include "SceneNode.h"
 #include <math.h>
 

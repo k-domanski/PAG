@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "ModelTest.h"
+#include "Model.h"
 #include <glad/glad.h>
 
 struct Transform
