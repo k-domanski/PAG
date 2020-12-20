@@ -355,3 +355,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+PAG/PAG/src/Shader_m.h
+PAG/PAG/src/Test.cpp
+PAG/PAG/res/shaders/1.model_loading.vs
+PAG/PAG/res/shaders/1.model_loading.fs

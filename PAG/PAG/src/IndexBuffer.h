@@ -7,8 +7,7 @@ private:
 	unsigned int m_RendererID;
 	unsigned int m_Count;
 public:
-	IndexBuffer() {};
-	IndexBuffer(const std::vector<unsigned int>& data, unsigned int count);
+	IndexBuffer(const std::vector<unsigned int>& data);
 	~IndexBuffer();
 
 	void Bind() const;
