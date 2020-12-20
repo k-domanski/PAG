@@ -142,13 +142,13 @@ int main(void)
 		SceneNode planet3(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(1.0f), p3, 0.02f, 50.0f);
 		SceneNode planet4(glm::vec3(20.0f, 0.0f, 0.0f), glm::vec3(1.0f), p4, 0.04f, 65.0f);
 		SceneNode moon1(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m1, 0.03f, 75.0f);
-		SceneNode moon2(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m2, 0.02f, 60.0f);
-		SceneNode moon3(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m3, 0.02f, 35.0f);
-		SceneNode moon4(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m4, 0.02f, 25.0f);
-		SceneNode moon5(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.5f), m5, 0.02f, 15.0f);
-		SceneNode moon6(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m6, 0.02f, 85.0f);
-		SceneNode moon7(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m4, 0.05f, 55.0f);
-		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(1.0f), geometry, vao, 0.02f);
+		SceneNode moon2(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m2, 0.025f, 60.0f);
+		SceneNode moon3(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m3, 0.035f, 35.0f);
+		SceneNode moon4(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.5f), m4, 0.04f, 25.0f);
+		SceneNode moon5(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.5f), m5, 0.045f, 15.0f);
+		SceneNode moon6(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m6, 0.05f, 85.0f);
+		SceneNode moon7(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.25f), m4, 0.055f, 55.0f);
+		SceneNode cylinder(glm::vec3(25.0f, 0.0f, 0.0f), glm::vec3(2.0f), geometry, vao, 0.02f);
 		
 		sun.AddChild(&planet1);
 		sun.AddChild(&planet2);

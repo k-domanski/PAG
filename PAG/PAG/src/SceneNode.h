@@ -24,8 +24,9 @@ public:
 	SceneNode(glm::vec3 pos, glm::vec3 scale, Shader& shader, VertexArray& _vao, float rotSpeed)
 		:geometry(shader), vao(_vao), isGeometry(true), _rotationSpeed(rotSpeed)
 	{
-		_local.Model = glm::scale(_local.Model, scale);
 		_local.Model = glm::translate(_local.Model, pos);
+		_local.Model = glm::rotate(_local.Model, 45.0f, glm::vec3(1.0f, 0.0f, 1.0f));
+		_local.Model = glm::scale(_local.Model, scale);
 		_radius = sqrtf((pos.x * pos.x) + (pos.z * pos.z));
 	}
 
