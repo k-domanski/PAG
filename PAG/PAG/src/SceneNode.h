@@ -95,6 +95,11 @@ public:
 		}
 	}
 
+	void AddModel(std::vector<glm::mat4>& data)
+	{
+		data.push_back(_world.Model);
+	}
+
 	inline const Transform& Local() const{ return _local; }
 	inline Transform& World() { return _world; }
 	inline const int& NumOfChildren() const { return numOfChildren; }

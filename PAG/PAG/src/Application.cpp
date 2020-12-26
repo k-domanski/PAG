@@ -132,16 +132,25 @@ int main(void)
 		/*3D roof*/
 		std::vector<float> triagleVertices =
 		{
-			-0.05f,  0.05f, -1.0f, 1.0f, 0.0f, 0.0f,
-			 0.05f, -0.05f,-1.0f, 0.0f, 1.0f, 0.0f,
-			-0.05f, -0.05f,-1.0f, 0.0f, 0.0f, 1.0f
+			-0.0f,  0.1f, -0.05f, 1.0f, 0.0f, 0.0f,
+			 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
+			-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
+
+			 0.05f, -0.05f,-0.1f, 0.0f, 1.0f, 0.0f,
+			 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f
 		};
 		
 		std::vector<unsigned int> roofIndices =
 		{
-
+			0, 1, 2,
+			0, 1, 3,
+			0, 2, 4,
+			0,3,4,
+			
+			1,2,3,
+			1, 2, 4
 		};
-		
+		IndexBuffer roofIbo(roofIndices);
 		Shader shader("res/shaders/Basic.shader", 0);
 
 		std::vector<glm::vec2> translations;
@@ -158,7 +167,7 @@ int main(void)
 		}
 		VertexArray vao;
 		VertexBuffer trans(translations);
-		VertexBuffer vbo(quadVertices, quadVertices.size() * sizeof(float));
+		VertexBuffer vbo(triagleVertices, triagleVertices.size() * sizeof(float));
 		VertexBufferLayout layout;
 		layout.Push<float>(3);
 		layout.Push<float>(3);
@@ -238,9 +247,9 @@ int main(void)
 			}
 
 			vao.Bind();
-			houseIbo.Bind();
+			roofIbo.Bind();
 			//glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
-			glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, 100);
+			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, 100);
 			
 
 			if (isWireFrame)
