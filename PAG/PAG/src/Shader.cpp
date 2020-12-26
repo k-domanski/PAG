@@ -9,7 +9,7 @@ Shader::Shader(const std::string& filepath, int ID)
 	:m_RendererID(ID), m_Filepath(filepath)
 {
 	ShaderProgramSource shaderSource = ParseShader(filepath);
-	m_RendererID = CreateShader(shaderSource.VertexSource, shaderSource.FragmentSource, shaderSource.GeometrySource);
+	m_RendererID = CreateShader(shaderSource.VertexSource, shaderSource.FragmentSource);
 }
 
 Shader::~Shader()
@@ -40,6 +40,11 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+}
+
+void Shader::SetUniformVec2f(const std::string& name, const glm::vec2& vector)
+{
+	glUniform2fv(GetUniformLocation(name), 1, &vector[0]);
 }
 
 int Shader::GetUniformLocation(const std::string& name)

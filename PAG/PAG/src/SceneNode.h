@@ -30,6 +30,14 @@ public:
 		_radius = sqrtf((pos.x * pos.x) + (pos.z * pos.z));
 	}
 
+	SceneNode(glm::vec3 pos, glm::vec3 scale, VertexArray& _vao, float rotSpeed)
+		:vao(_vao), _rotationSpeed(rotSpeed)
+	{
+		_local.Model = glm::translate(_local.Model, pos);
+		_local.Model = glm::scale(_local.Model, scale);
+		
+	}
+
 	void Draw(Shader& shader)
 	{
 		if (isGeometry)
@@ -88,7 +96,8 @@ public:
 	}
 
 	inline const Transform& Local() const{ return _local; }
-	inline const Transform& World() const { return _world; }
+	inline Transform& World() { return _world; }
+	inline const int& NumOfChildren() const { return numOfChildren; }
 
 private:
 	Transform _local;
