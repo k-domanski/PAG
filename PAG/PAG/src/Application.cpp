@@ -142,11 +142,13 @@ int main(void)
 		
 		std::vector<unsigned int> roofIndices =
 		{
+			/*side triangles*/
 			0, 1, 2,
 			0, 1, 3,
 			0, 2, 4,
-			0,3,4,
+			0, 3, 4,
 			
+			/*bottom quad*/
 			1,2,3,
 			1, 2, 4
 		};
@@ -174,15 +176,31 @@ int main(void)
 
 		vao.AddBuffer(vbo, layout);
 	
+		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
+		for (int i = -100; i < 100; i++)
+		{
+			for (int j = -100; j < 100; j++)
+			{
+				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(10.0f));
+				root.AddChild(test);
+			}
+		}
+
+		root.calculateWorld(root, root.World(), root.World());
 		std::vector<glm::mat4> data;
 
-		for (unsigned int i = 0; i < translations.size(); i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(translations[i].x, translations[i].y, 0.0f));
-			data.push_back(model);
-		}
+		//for (unsigned int i = 0; i < translations.size(); i++)
+		//{
+		//	glm::mat4 model = glm::mat4(1.0f);
+		//	model = glm::translate(model, glm::vec3(translations[i].x, translations[i].y, 0.0f));
+		//	data.push_back(model);
+		//}
 		
+		for (unsigned int i = 0; i < root.NumOfChildren(); i++)
+		{
+			data.push_back(root.Children()[i].World().Model);
+		}
+
 		VertexBuffer buffer(data);
 		vao.Bind();
 		buffer.Bind();
@@ -249,7 +267,7 @@ int main(void)
 			vao.Bind();
 			roofIbo.Bind();
 			//glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
-			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, 100);
+			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
 			
 
 			if (isWireFrame)

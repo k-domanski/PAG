@@ -30,8 +30,7 @@ public:
 		_radius = sqrtf((pos.x * pos.x) + (pos.z * pos.z));
 	}
 
-	SceneNode(glm::vec3 pos, glm::vec3 scale, VertexArray& _vao, float rotSpeed)
-		:vao(_vao), _rotationSpeed(rotSpeed)
+	SceneNode(glm::vec3 pos, glm::vec3 scale)
 	{
 		_local.Model = glm::translate(_local.Model, pos);
 		_local.Model = glm::scale(_local.Model, scale);
@@ -58,23 +57,29 @@ public:
 		
 		for (unsigned int i = 0; i < numOfChildren; i++)
 		{
-			children[i]->Draw(shader);
+			children[i].Draw(shader);
 		}
 	}
 
-	void AddChild(SceneNode* child)
+	//void AddChild(SceneNode* child)
+	//{
+	//	children.push_back(child);
+	//	numOfChildren++;
+	//}
+
+	void AddChild(SceneNode child)
 	{
 		children.push_back(child);
 		numOfChildren++;
 	}
 
-	void calculateWorld(SceneNode* currentNode, Transform parrentWorld, Transform parrentLocal)
+	void calculateWorld(SceneNode currentNode, Transform parrentWorld, Transform parrentLocal)
 	{
 		RotateAroundParent();
 		_world.Model = parrentWorld.Model * _local.Model;
 		for (unsigned int i = 0; i < numOfChildren; i++)
 		{
-			children[i]->calculateWorld(children[i], _world, _local);
+			children[i].calculateWorld(children[i], _world, _local);
 		}
 	}
 
@@ -91,7 +96,7 @@ public:
 
 		for (unsigned int i = 0; i < numOfChildren; i++)
 		{
-			children[i]->DrawOrbits(VAO, shader, _world, count);
+			children[i].DrawOrbits(VAO, shader, _world, count);
 		}
 	}
 
@@ -103,13 +108,14 @@ public:
 	inline const Transform& Local() const{ return _local; }
 	inline Transform& World() { return _world; }
 	inline const int& NumOfChildren() const { return numOfChildren; }
+	inline  std::vector<SceneNode>& Children()  { return children; }
 
 private:
 	Transform _local;
 	Transform _world;
 	Model _model;
 	float _radius;
-	std::vector<SceneNode*> children;
+	std::vector<SceneNode> children;
 	int numOfChildren = 0;
 	float _rotationSpeed;
 	Shader geometry;
