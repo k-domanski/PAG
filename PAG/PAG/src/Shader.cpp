@@ -47,6 +47,11 @@ void Shader::SetUniformVec2f(const std::string& name, const glm::vec2& vector)
 	glUniform2fv(GetUniformLocation(name), 1, &vector[0]);
 }
 
+void Shader::SetUniformVec3f(const std::string& name, const glm::vec3& vector)
+{
+	glUniform3fv(GetUniformLocation(name), 1, &vector[0]);
+}
+
 int Shader::GetUniformLocation(const std::string& name)
 {
 	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())

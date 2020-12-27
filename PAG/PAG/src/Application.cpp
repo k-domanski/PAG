@@ -149,7 +149,7 @@ int main(void)
 			0, 3, 4,
 			
 			/*bottom quad*/
-			1,2,3,
+			1, 2, 3,
 			1, 2, 4
 		};
 		
@@ -157,6 +157,9 @@ int main(void)
 		
 		
 		Shader shader("res/shaders/Basic.shader", 0);
+		Shader light("res/shaders/LightSource.shader", 1);
+
+		VertexArray lightVAO;
 
 		VertexArray houseVAO;
 		VertexArray roofVAO;
@@ -168,6 +171,7 @@ int main(void)
 
 		houseVAO.AddBuffer(houseVBO, layout);
 		roofVAO.AddBuffer(roofVBO, layout);
+		lightVAO.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
 		for (int i = -5; i < 5; i++)
@@ -180,6 +184,7 @@ int main(void)
 				root.AddChild(test);
 			}
 		}
+		
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		std::vector<glm::mat4> data;
 		std::vector<glm::mat4> data1;
@@ -193,7 +198,9 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-
+		SceneNode lightS(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(5.0f));
+		root.AddChild(lightS);
+		root.calculateWorld(root, root.World(), root.World());
 		VertexBuffer roofBuffer(data);
 		VertexBuffer houseBuffer(data1);
 
@@ -271,11 +278,8 @@ int main(void)
 			shader.Bind();
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
+			shader.SetUniformVec3f("lightColor", glm::vec3(1.0f));
 			
-			if (!isPaused)
-			{
-				
-			}
 			roofVAO.Bind();
 			roofIbo.Bind();
 			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
@@ -287,6 +291,16 @@ int main(void)
 			glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
 			houseVAO.Unbind();
 			houseIbo.Unbind();
+
+			shader.Unbind();
+
+			light.Bind();
+			light.SetUniformMat4f("projection", projection);
+			light.SetUniformMat4f("view", view);
+			light.SetUniformMat4f("model", root.Children()[100].World().Model);
+			Renderer::Draw(lightVAO, houseIbo, light);
+			light.Unbind();
+			lightVAO.Unbind();
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
