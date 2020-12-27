@@ -89,7 +89,7 @@ int main(void)
 		stbi_set_flip_vertically_on_load(true);
 		
 		/*3D house*/
-		std::vector<float> quadVertices =
+		std::vector<float> houseVertices =
 		{
 			-0.05f,  0.05f,0.0f, 1.0f, 0.0f, 0.0f,
 			 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
@@ -127,10 +127,10 @@ int main(void)
 			1,4,6
 		};
 
-
 		IndexBuffer houseIbo(houseIndices);
+
 		/*3D roof*/
-		std::vector<float> triagleVertices =
+		std::vector<float> roofVertices =
 		{
 			-0.0f,  0.1f, -0.05f, 1.0f, 0.0f, 0.0f,
 			 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
@@ -152,58 +152,53 @@ int main(void)
 			1,2,3,
 			1, 2, 4
 		};
+		
 		IndexBuffer roofIbo(roofIndices);
+		
+		
 		Shader shader("res/shaders/Basic.shader", 0);
 
-		std::vector<glm::vec2> translations;
-		float offset = 0.01f;
-		for (int i = -10; i < 10; i += 2)
-		{
-			for (int j = -10; j < 10; j += 2)
-			{
-				glm::vec2 translation;
-				translation.x = (float)i / 10.0f + offset;
-				translation.y = (float)j / 10.0f + offset;
-				translations.push_back(translation);
-			}
-		}
-		VertexArray vao;
-		VertexBuffer trans(translations);
-		VertexBuffer vbo(triagleVertices, triagleVertices.size() * sizeof(float));
+		VertexArray houseVAO;
+		VertexArray roofVAO;
+		VertexBuffer roofVBO(roofVertices, roofVertices.size() * sizeof(float));
+		VertexBuffer houseVBO(houseVertices, houseVertices.size() * sizeof(float));
 		VertexBufferLayout layout;
 		layout.Push<float>(3);
 		layout.Push<float>(3);
 
-		vao.AddBuffer(vbo, layout);
+		houseVAO.AddBuffer(houseVBO, layout);
+		roofVAO.AddBuffer(roofVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -100; i < 100; i++)
+		for (int i = -5; i < 5; i++)
 		{
-			for (int j = -100; j < 100; j++)
+			for (int j = -5; j < 5; j++)
 			{
-				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(10.0f));
+				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
+				SceneNode test1(glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f));
+				test.AddChild(test1);
 				root.AddChild(test);
 			}
 		}
-
-		root.calculateWorld(root, root.World(), root.World());
+		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		std::vector<glm::mat4> data;
+		std::vector<glm::mat4> data1;
+		root.calculateWorld(root, root.World(), root.World());
 
-		//for (unsigned int i = 0; i < translations.size(); i++)
-		//{
-		//	glm::mat4 model = glm::mat4(1.0f);
-		//	model = glm::translate(model, glm::vec3(translations[i].x, translations[i].y, 0.0f));
-		//	data.push_back(model);
-		//}
-		
 		for (unsigned int i = 0; i < root.NumOfChildren(); i++)
 		{
 			data.push_back(root.Children()[i].World().Model);
+			for (int j = 0; j < root.Children()[i].NumOfChildren(); j++)
+			{
+				data1.push_back(root.Children()[i].Children()[j].World().Model);
+			}
 		}
 
-		VertexBuffer buffer(data);
-		vao.Bind();
-		buffer.Bind();
+		VertexBuffer roofBuffer(data);
+		VertexBuffer houseBuffer(data1);
+
+		roofVAO.Bind();
+		roofBuffer.Bind();
 		glEnableVertexAttribArray(3);
 		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
 		glEnableVertexAttribArray(4);
@@ -212,13 +207,31 @@ int main(void)
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
 		glEnableVertexAttribArray(6);
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-		buffer.Unbind();
+		roofBuffer.Unbind();
 		glVertexAttribDivisor(3, 1);
 		glVertexAttribDivisor(4, 1);
 		glVertexAttribDivisor(5, 1);
 		glVertexAttribDivisor(6, 1);
-		
-		vao.Unbind();
+		roofVAO.Unbind();
+
+		houseVAO.Bind();
+		houseBuffer.Bind();
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+		houseBuffer.Unbind();
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+		houseVAO.Unbind();
+
+
 		//vao.Bind();
 		//glEnableVertexAttribArray(2);
 		//glBindBuffer(GL_ARRAY_BUFFER, trans.GetID()); // this attribute comes from a different vertex buffer
@@ -263,12 +276,17 @@ int main(void)
 			{
 				
 			}
-
-			vao.Bind();
+			roofVAO.Bind();
 			roofIbo.Bind();
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
-			
+			roofVAO.Unbind();
+			roofIbo.Unbind();
+
+			houseVAO.Bind();
+			houseIbo.Bind();
+			glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
+			houseVAO.Unbind();
+			houseIbo.Unbind();
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
