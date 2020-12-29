@@ -243,7 +243,7 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-		SceneNode lightS(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f));
+		SceneNode lightS(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(2.0f));
 		root.AddChild(lightS);
 		root.calculateWorld(root, root.World());
 		VertexBuffer roofBuffer(data);
@@ -323,9 +323,17 @@ int main(void)
 			shader.Bind();
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
-			shader.SetUniformVec3f("lightColor", glm::vec3(1.0f));
 			shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
-			shader.SetUniformVec3f("objColor", glm::vec3(1.0f, 0.5f, 0.5f));
+			
+			shader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+			shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+			shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+
+			shader.SetUniformVec3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			shader.SetUniformVec3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+			shader.SetUniformVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+			shader.SetUniform1f("material.shininess", 64.0f);
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			
 			//roofVAO.Bind();
