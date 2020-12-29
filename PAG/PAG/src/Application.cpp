@@ -89,21 +89,66 @@ int main(void)
 		stbi_set_flip_vertically_on_load(true);
 		
 		/*3D house*/
+		//std::vector<float> houseVertices =
+		//{
+		//	-0.05f,  0.05f,0.0f, 1.0f, 0.0f, 0.0f,
+		//	 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
+		//	-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
+		//				   
+		//	 0.05f,  0.05f,0.0f, 0.0f, 1.0f, 1.0f,
+		//
+		//	 0.05f, -0.05f,-0.1f,0.0f, 1.0f, 0.0f,
+		//	 0.05f,  0.05f,-0.1f,0.0f, 1.0f, 1.0f,
+		//
+		//	 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f,
+		//	 -0.05f,  0.05f,-0.1f, 1.0f, 0.0f, 0.0f,
+		//};
+		
 		std::vector<float> houseVertices =
 		{
-			-0.05f,  0.05f,0.0f, 1.0f, 0.0f, 0.0f,
-			 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
-			-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
-						   
-			 0.05f,  0.05f,0.0f, 0.0f, 1.0f, 1.0f,
-
-			 0.05f, -0.05f,-0.1f, 0.0f, 1.0f, 0.0f,
-			 0.05f,  0.05f,-0.1f, 0.0f, 1.0f, 1.0f,
-
-			 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f,
-			 -0.05f,  0.05f,-0.1f, 1.0f, 0.0f, 0.0f,
+			-0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			 0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			 0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			 0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			-0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			-0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
+			
+			-0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			 0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			 0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			 0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			-0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			-0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
+			
+			-0.05f,  0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
+			-0.05f,  0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
+			-0.05f,  0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
+			
+			 0.05f,  0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
+			 0.05f,  0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
+			 0.05f,  0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
+			
+			-0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
+			-0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
+			-0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
+			
+			-0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
+			-0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
+			-0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f
 		};
-		
+
 		std::vector<unsigned int> houseIndices =
 		{
 			/*front quad*/
@@ -174,9 +219,9 @@ int main(void)
 		lightVAO.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -5; i < 5; i++)
+		for (int i = -1; i < 0; i++)
 		{
-			for (int j = -5; j < 5; j++)
+			for (int j = -1; j < 0; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f));
@@ -279,16 +324,19 @@ int main(void)
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
 			shader.SetUniformVec3f("lightColor", glm::vec3(1.0f));
+			shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
+			shader.SetUniformVec3f("objColor", glm::vec3(1.0f, 0.5f, 0.5f));
 			
-			roofVAO.Bind();
-			roofIbo.Bind();
-			glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
-			roofVAO.Unbind();
-			roofIbo.Unbind();
+			//roofVAO.Bind();
+			//roofIbo.Bind();
+			//glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
+			//roofVAO.Unbind();
+			//roofIbo.Unbind();
 
 			houseVAO.Bind();
 			houseIbo.Bind();
-			glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
+			//glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
 			houseVAO.Unbind();
 			houseIbo.Unbind();
 
@@ -297,8 +345,9 @@ int main(void)
 			light.Bind();
 			light.SetUniformMat4f("projection", projection);
 			light.SetUniformMat4f("view", view);
-			light.SetUniformMat4f("model", root.Children()[100].World().Model);
-			Renderer::Draw(lightVAO, houseIbo, light);
+			light.SetUniformMat4f("model", root.Children()[1].World().Model);
+			Renderer::Draw(houseVAO, light);
+			//Renderer::Draw(lightVAO, houseIbo, light);
 			light.Unbind();
 			lightVAO.Unbind();
 
