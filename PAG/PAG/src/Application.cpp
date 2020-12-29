@@ -106,47 +106,47 @@ int main(void)
 		
 		std::vector<float> houseVertices =
 		{
-			-0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			 0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			 0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			 0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			-0.05f,  0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			-0.05f, -0.05f, -0.1f,  0.0f,  0.0f, -1.0f,
-			
-			-0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			 0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			 0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			 0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			-0.05f,  0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			-0.05f, -0.05f,  0.1f,  0.0f,  0.0f,  1.0f,
-			
-			-0.05f,  0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
-			-0.05f,  0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
-			-0.05f, -0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
-			-0.05f, -0.05f, -0.1f, -1.0f,  0.0f,  0.0f,
-			-0.05f, -0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
-			-0.05f,  0.05f,  0.1f, -1.0f,  0.0f,  0.0f,
-			
-			 0.05f,  0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
-			 0.05f,  0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
-			 0.05f, -0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
-			 0.05f, -0.05f, -0.1f,  1.0f,  0.0f,  0.0f,
-			 0.05f, -0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
-			 0.05f,  0.05f,  0.1f,  1.0f,  0.0f,  0.0f,
-			
-			-0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
-			 0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
-			 0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
-			 0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
-			-0.05f, -0.05f,  0.1f,  0.0f, -1.0f,  0.0f,
-			-0.05f, -0.05f, -0.1f,  0.0f, -1.0f,  0.0f,
-			
-			-0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f,
-			 0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f,
-			 0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
-			 0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
-			-0.05f,  0.05f,  0.1f,  0.0f,  1.0f,  0.0f,
-			-0.05f,  0.05f, -0.1f,  0.0f,  1.0f,  0.0f
+			-0.05f, -0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+			 0.05f, -0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+			 0.05f,  0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+			 0.05f,  0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+			-0.05f,  0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+			-0.05f, -0.05f, -0.05f,  0.0f,  0.0f, -1.0f,
+							  
+			-0.05f, -0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+			 0.05f, -0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+			 0.05f,  0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+			 0.05f,  0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+			-0.05f,  0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+			-0.05f, -0.05f,  0.05f,  0.0f,  0.0f,  1.0f,
+							  
+			-0.05f,  0.05f,  0.05f, -1.0f,  0.0f,  0.0f,
+			-0.05f,  0.05f, -0.05f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f, -0.05f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f, -0.05f, -1.0f,  0.0f,  0.0f,
+			-0.05f, -0.05f,  0.05f, -1.0f,  0.0f,  0.0f,
+			-0.05f,  0.05f,  0.05f, -1.0f,  0.0f,  0.0f,
+							  
+			 0.05f,  0.05f,  0.05f,  1.0f,  0.0f,  0.0f,
+			 0.05f,  0.05f, -0.05f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f, -0.05f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f, -0.05f,  1.0f,  0.0f,  0.0f,
+			 0.05f, -0.05f,  0.05f,  1.0f,  0.0f,  0.0f,
+			 0.05f,  0.05f,  0.05f,  1.0f,  0.0f,  0.0f,
+							 
+			-0.05f, -0.05f, -0.05f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f, -0.05f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f,  0.05f,  0.0f, -1.0f,  0.0f,
+			 0.05f, -0.05f,  0.05f,  0.0f, -1.0f,  0.0f,
+			-0.05f, -0.05f,  0.05f,  0.0f, -1.0f,  0.0f,
+			-0.05f, -0.05f, -0.05f,  0.0f, -1.0f,  0.0f,
+							  
+			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f,
+			 0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f,
+			-0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f,
+			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f
 		};
 
 		std::vector<unsigned int> houseIndices =
@@ -219,9 +219,9 @@ int main(void)
 		lightVAO.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -1; i < 0; i++)
+		for (int i = 0; i < 1; i++)
 		{
-			for (int j = -1; j < 0; j++)
+			for (int j = 0; j < 1; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f));
@@ -233,7 +233,7 @@ int main(void)
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		std::vector<glm::mat4> data;
 		std::vector<glm::mat4> data1;
-		root.calculateWorld(root, root.World(), root.World());
+		root.calculateWorld(root, root.World());
 
 		for (unsigned int i = 0; i < root.NumOfChildren(); i++)
 		{
@@ -243,9 +243,9 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-		SceneNode lightS(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(5.0f));
+		SceneNode lightS(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f));
 		root.AddChild(lightS);
-		root.calculateWorld(root, root.World(), root.World());
+		root.calculateWorld(root, root.World());
 		VertexBuffer roofBuffer(data);
 		VertexBuffer houseBuffer(data1);
 
@@ -326,6 +326,7 @@ int main(void)
 			shader.SetUniformVec3f("lightColor", glm::vec3(1.0f));
 			shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
 			shader.SetUniformVec3f("objColor", glm::vec3(1.0f, 0.5f, 0.5f));
+			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			
 			//roofVAO.Bind();
 			//roofIbo.Bind();
@@ -346,7 +347,7 @@ int main(void)
 			light.SetUniformMat4f("projection", projection);
 			light.SetUniformMat4f("view", view);
 			light.SetUniformMat4f("model", root.Children()[1].World().Model);
-			Renderer::Draw(houseVAO, light);
+			Renderer::Draw(lightVAO, light);
 			//Renderer::Draw(lightVAO, houseIbo, light);
 			light.Unbind();
 			lightVAO.Unbind();

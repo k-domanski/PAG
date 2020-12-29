@@ -73,13 +73,13 @@ public:
 		numOfChildren++;
 	}
 
-	void calculateWorld(SceneNode currentNode, Transform parrentWorld, Transform parrentLocal)
+	void calculateWorld(SceneNode currentNode, Transform parrentWorld)
 	{
-		RotateAroundParent();
 		_world.Model = parrentWorld.Model * _local.Model;
+
 		for (unsigned int i = 0; i < numOfChildren; i++)
 		{
-			children[i].calculateWorld(children[i], _world, _local);
+			children[i].calculateWorld(children[i], _world);
 		}
 	}
 
