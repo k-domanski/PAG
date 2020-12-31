@@ -3,10 +3,12 @@
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 aNormal;
+layout(location = 2) in vec2 aTextCoord;
 layout(location = 3) in mat4 aInstanceModel;
 
 out vec3 fNormal;
 out vec3 fPos;
+out vec2 fTextCoord;
 uniform mat4 view;
 uniform mat4 projection;
 
@@ -16,6 +18,8 @@ void main()
 	gl_Position = projection * view * vec4(fPos, 1.0);
 	//gl_Position = projection * view * aInstanceModel * vec4(position, 1.0);
 	fNormal = mat3(transpose(inverse(aInstanceModel))) * aNormal;
+
+	fTextCoord = aTextCoord;
 };
 
 #shader fragment
@@ -24,6 +28,7 @@ void main()
 out vec4 FragColor;
 in vec3 fNormal;
 in vec3 fPos;
+in vec2 fTextCoord;
 
 struct Material
 {
@@ -33,20 +38,51 @@ struct Material
 	float shininess;
 };
 
-struct Light
+struct PointLight
 {
 	vec3 position;
+
+	float constant;
+	float linear;
+	float quadratic;
 
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
 };
 
+struct DirLight
+{
+	vec3 direction;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+struct SpotLight
+{
+	vec3 position;
+	vec3 direction;
+
+	float cutOff;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+
+
 uniform Material material;
 uniform Light light;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+
+vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 calculateSpotLight();
 void main()
 {
 	/*ambient*/
@@ -69,3 +105,14 @@ void main()
 	vec3 result = (ambient + diffuse + specular);
 	FragColor = vec4(result, 1.0);
 };
+
+vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir)
+{
+
+}
+
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+
+}
+
