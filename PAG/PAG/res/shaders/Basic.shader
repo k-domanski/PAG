@@ -66,6 +66,9 @@ struct SpotLight
 	vec3 direction;
 
 	float cutOff;
+	float constant;
+	float _linear;
+	float quadratic;
 
 	vec3 ambient;
 	vec3 diffuse;
@@ -75,7 +78,7 @@ struct SpotLight
 
 
 uniform Material material;
-uniform PointLight light;
+uniform SpotLight light;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -84,7 +87,8 @@ uniform sampler2D Texture;
 
 vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-//vec3 calculateSpotLight();
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+
 void main()
 {
 	///*ambient*/
@@ -108,7 +112,7 @@ void main()
 	//
 	//vec3 result = (ambient + diffuse + specular) * texture(Texture, fTextCoord).rgb;
 	//vec3 result = calculateDirLight(light, fNormal, viewDir);
-	vec3 result = calculatePointLight(light, fNormal, fPos, viewDir);
+	vec3 result = calculateSpotLight(light, fNormal, fPos, viewDir);
 	FragColor = vec4(result, 1.0);
 };
 
@@ -161,5 +165,42 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
 
 	vec3 result = (ambient + diffuse + specular);
 	return result;
+}
+
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+	vec3 lightDir = normalize(light.position - fragPos);
+
+	float theta = dot(lightDir, normalize(-light.direction));
+
+	if (theta > light.cutOff)
+	{
+		/*ambient*/
+		vec3 ambient = light.ambient * texture(Texture, fTextCoord).rgb;
+
+		/*diffuse*/
+		vec3 norm = normalize(normal);
+		float diff = max(dot(norm, lightDir), 0.0);
+		vec3 diffuse = light.diffuse * diff * texture(Texture, fTextCoord).rgb;
+
+		/*specular*/
+		vec3 reflectDir = reflect(-lightDir, norm);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		vec3 specular = light.specular * spec * material.specular;
+
+		float distance = length(light.position - fragPos);
+		float attenuation = 1.0 / (light.constant + light._linear * distance + light.quadratic * (distance * distance));
+
+		diffuse *= attenuation;
+		specular *= attenuation;
+
+
+		vec3 result = (ambient + diffuse + specular);
+		return result;
+	}
+	else
+	{
+		return light.ambient * texture(Texture, fTextCoord).rgb;
+	}
 }
 

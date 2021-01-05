@@ -338,7 +338,10 @@ int main(void)
 			shader.SetUniformVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 			shader.SetUniform1f("material.shininess", 64.0f);
 
-			shader.SetUniformVec3f("light.position", root.Children()[1].World().Model[3]);
+			//shader.SetUniformVec3f("light.position", root.Children()[1].World().Model[3]);
+			shader.SetUniformVec3f("light.position", gCamera.Position);
+			shader.SetUniformVec3f("light.direction", gCamera.Front);
+			shader.SetUniform1f("light.cutOff", glm::cos(glm::radians(12.5f)));
 			shader.SetUniform1f("light.constant", 1.0f);
 			shader.SetUniform1f("light._linear", 0.09f);
 			shader.SetUniform1f("light.quadratic", 0.032f);
