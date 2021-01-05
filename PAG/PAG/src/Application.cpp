@@ -223,9 +223,9 @@ int main(void)
 		lightVAO.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = 0; i < 1; i++)
+		for (int i = -5; i < 5; i++)
 		{
-			for (int j = 0; j < 1; j++)
+			for (int j = -5; j < 5; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f));
@@ -332,13 +332,17 @@ int main(void)
 			shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 			shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-			shader.SetUniformVec3f("light.direction", glm::vec3(1.0f, 1.0f, 1.0f));
+			//shader.SetUniformVec3f("light.direction", glm::vec3(1.0f, 1.0f, 1.0f));
 			shader.SetUniformVec3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 			shader.SetUniformVec3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 			shader.SetUniformVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 			shader.SetUniform1f("material.shininess", 64.0f);
 
-			shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
+			shader.SetUniformVec3f("light.position", root.Children()[1].World().Model[3]);
+			shader.SetUniform1f("light.constant", 1.0f);
+			shader.SetUniform1f("light._linear", 0.09f);
+			shader.SetUniform1f("light.quadratic", 0.032f);
+			//shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			
 			//roofVAO.Bind();
