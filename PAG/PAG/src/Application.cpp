@@ -32,16 +32,71 @@ bool gFirstMouse = true;
 float gDeltaTime = 0.0f;
 float gLastFrame = 0.0f;
 
-struct drawingData
+struct DirLight
 {
-	std::vector<glm::vec3> newPositions;
-	std::vector<glm::vec3> newScales;
+	glm::vec3 direction;
 
-	void clearData()
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+};
+
+struct PointLight
+{
+	glm::vec3 position;
+
+	float constant;
+	float _linear;
+	float quadratic;
+
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+
+	PointLight(glm::vec3 pos, float con, float lin, float quad, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec)
+		:position(pos), constant(con), _linear(lin), quadratic(quad), ambient(amb), diffuse(diff), specular(spec)
+	{}
+
+	PointLight()
 	{
-		newPositions.clear();
-		newScales.clear();
+		constant = 1.0f;
+		_linear = 0.09f;
+		quadratic = 0.032f;
+
+		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+		specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	}
+
+	void SetUniforms(Shader& shader, const std::string& lightName)
+	{
+		shader.SetUniformVec3f(lightName + ".position", position);
+
+		shader.SetUniform1f(lightName + ".constant", constant);
+		shader.SetUniform1f(lightName + "._linear", _linear);
+		shader.SetUniform1f(lightName + ".quadratic", quadratic);
+
+		shader.SetUniformVec3f(lightName + ".ambient", ambient);
+		shader.SetUniformVec3f(lightName + ".diffuse", diffuse);
+		shader.SetUniformVec3f(lightName + ".specular", specular);
+	}
+};
+
+struct SpotLight
+{
+	glm::vec3 position;
+	glm::vec3 direction;
+
+	float cutOff;
+	float outerCutOff;
+
+	float constant;
+	float _linear;
+	float quadratic;
+
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 };
 
 void ProcessInput(GLFWwindow* window);
@@ -239,7 +294,7 @@ int main(void)
 		roofTexture.Bind(0);
 		Texture houseTexture("brickWall.jpg", "res/textures", "diffuse");
 		houseTexture.Bind(0);
-		Texture groundTexture("grass.jpg", "res/textures", "diffuse");
+		Texture groundTexture("grass1.jpg", "res/textures", "diffuse");
 		groundTexture.Bind(0);
 		roofTexture.Unbind();
 		houseTexture.Unbind();
@@ -263,9 +318,9 @@ int main(void)
 		groundVao.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -100; i < 101; i++)
+		for (int i = -10; i < 11; i++)
 		{
-			for (int j = -100; j < 101; j++)
+			for (int j = -10; j < 11; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
@@ -274,7 +329,6 @@ int main(void)
 			}
 		}
 		
-		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		std::vector<glm::mat4> data;
 		std::vector<glm::mat4> data1;
 		std::vector<glm::mat4> data2;
@@ -288,8 +342,10 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-		SceneNode lightS(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(5.0f, 50.0f, 50.0f));
+		SceneNode lightS(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(1.0f));
 		root.AddChild(lightS);
+		SceneNode pointL(glm::vec3(0.5f, 1.5f, 0.0f), glm::vec3(1.0f));
+		root.AddChild(pointL);
 		SceneNode ground(glm::vec3(0.0f, -0.2f, 0.0f), glm::vec3(2500.0f,1.0f, 2500.0f));
 		root.AddChild(ground);
 		root.calculateWorld(root, root.World());
@@ -297,7 +353,17 @@ int main(void)
 		VertexBuffer roofBuffer(data1);
 		VertexBuffer houseBuffer(data);
 		VertexBuffer groundBuffer(data2);
-
+		//PointLight pointLigh(root.Children()[root.Children().size() - 2].World().Model[3], 1.0f, 0.09f, 0.032f, glm::vec3(0.2f, 0.2f, 0.2f),
+		//	glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
+		PointLight pointLigh;
+		PointLight pointLigh1;
+		pointLigh.position = root.Children()[root.Children().size() - 2].World().Model[3];
+		pointLigh1.position = root.Children()[root.Children().size() - 3].World().Model[3];
+		
+		PointLight lights[2];
+		lights[0] = pointLigh;
+		lights[1] = pointLigh1;
+		
 		groundVao.Bind();
 		groundBuffer.Bind();
 		glEnableVertexAttribArray(3);
@@ -395,21 +461,25 @@ int main(void)
 			shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
 			//shader.SetUniformVec3f("light.direction", glm::vec3(1.0f, 1.0f, 1.0f));
-			shader.SetUniformVec3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-			shader.SetUniformVec3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-			shader.SetUniformVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			shader.SetUniformVec3f("spotLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+			shader.SetUniformVec3f("spotLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+			shader.SetUniformVec3f("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 			shader.SetUniform1f("material.shininess", 64.0f);
 
 			//shader.SetUniformVec3f("light.position", root.Children()[1].World().Model[3]);
-			shader.SetUniformVec3f("light.position", gCamera.Position);
-			shader.SetUniformVec3f("light.direction", gCamera.Front);
-			shader.SetUniform1f("light.cutOff", glm::cos(glm::radians(12.5f)));
-			shader.SetUniform1f("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-			shader.SetUniform1f("light.constant", 1.0f);
-			shader.SetUniform1f("light._linear", 0.09f);
-			shader.SetUniform1f("light.quadratic", 0.032f);
+			shader.SetUniformVec3f("spotLight.position", gCamera.Position);
+			shader.SetUniformVec3f("spotLight.direction", gCamera.Front);
+			shader.SetUniform1f("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+			shader.SetUniform1f("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+			shader.SetUniform1f("spotLight.constant", 1.0f);
+			shader.SetUniform1f("spotLight._linear", 0.09f);
+			shader.SetUniform1f("spotLight.quadratic", 0.032f);
 			//shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
+			for (int i = 0; i < 2; i++)
+			{
+				lights[i].SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
+			}
 			
 			roofVAO.Bind();
 			roofTexture.Bind(0);
@@ -439,8 +509,11 @@ int main(void)
 			light.Bind();
 			light.SetUniformMat4f("projection", projection);
 			light.SetUniformMat4f("view", view);
-			light.SetUniformMat4f("model", root.Children()[1].World().Model);
-			//Renderer::Draw(lightVAO, light);
+			for (int i = -3; i < -1; i++)
+			{
+				light.SetUniformMat4f("model", root.Children()[root.Children().size() + i].World().Model);
+				Renderer::Draw(lightVAO, light);
+			}
 			//Renderer::Draw(lightVAO, houseIbo, light);
 			light.Unbind();
 			lightVAO.Unbind();

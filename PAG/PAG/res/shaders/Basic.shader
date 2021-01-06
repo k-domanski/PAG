@@ -76,8 +76,12 @@ in vec3 fNormal;
 in vec3 fPos;
 in vec2 fTextCoord;
 
+#define NUM_SPOT_LIGHT 2
+
 uniform Material material;
-uniform SpotLight light;
+uniform DirLight dirLight;
+uniform PointLight pointLight[NUM_SPOT_LIGHT];
+uniform SpotLight spotLight;// [NUM_SPOT_LIGHT] ;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -92,7 +96,15 @@ void main()
 {
 	vec3 viewDir = normalize(viewPos - fPos);
 	
-	vec3 result = calculateSpotLight(light, fNormal, fPos, viewDir);
+	vec3 result = vec3(0.0);
+	//result += calculateDirLight(dirLight, fNormal, fPos, viewDir);
+	
+	result += calculateSpotLight(spotLight, fNormal, fPos, viewDir);
+	for (int i = 0; i < NUM_SPOT_LIGHT; i++)
+	{
+		result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
+	}
+
 	FragColor = vec4(result, 1.0);
 };
 
@@ -103,8 +115,8 @@ vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 	/*diffuse*/
 	vec3 norm = normalize(normal);
-	vec3 lightDir = normalize(lightPos - fPos);
-	//vec3 lightDir = normalize(-light.direction);
+	//vec3 lightDir = normalize(lightPos - fPos);
+	vec3 lightDir = normalize(-light.direction);
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = light.diffuse * diff * texture(Texture, fTextCoord).rgb;
 
