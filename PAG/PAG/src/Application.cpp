@@ -141,9 +141,9 @@ int main(void)
 			-0.05f, -0.05f,  0.05f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
 			-0.05f, -0.05f, -0.05f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
 							  
-			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
+			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f,//
 			 0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
-			 0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+			 0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,//
 			 0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
 			-0.05f,  0.05f,  0.05f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
 			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
@@ -171,8 +171,13 @@ int main(void)
 			2,6,1,
 			1,4,6
 		};
-
+		std::vector<unsigned int> groundInd =
+		{
+			31,33,34,
+			34, 31, 35
+		};
 		IndexBuffer houseIbo(houseIndices);
+		IndexBuffer groundIbo(groundInd);
 
 		/*3D roof*/
 		std::vector<float> roofVertices =
@@ -234,13 +239,17 @@ int main(void)
 		roofTexture.Bind(0);
 		Texture houseTexture("brickWall.jpg", "res/textures", "diffuse");
 		houseTexture.Bind(0);
+		Texture groundTexture("grass.jpg", "res/textures", "diffuse");
+		groundTexture.Bind(0);
 		roofTexture.Unbind();
 		houseTexture.Unbind();
+		groundTexture.Unbind();
 
 		VertexArray lightVAO;
 
 		VertexArray houseVAO;
 		VertexArray roofVAO;
+		VertexArray groundVao;
 		VertexBuffer roofVBO(roofVertices, roofVertices.size() * sizeof(float));
 		VertexBuffer houseVBO(houseVertices, houseVertices.size() * sizeof(float));
 		VertexBufferLayout layout;
@@ -251,13 +260,14 @@ int main(void)
 		houseVAO.AddBuffer(houseVBO, layout);
 		roofVAO.AddBuffer(roofVBO, layout);
 		lightVAO.AddBuffer(houseVBO, layout);
+		groundVao.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
 		for (int i = -100; i < 101; i++)
 		{
 			for (int j = -100; j < 101; j++)
 			{
-				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(1.0f));
+				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
 				test.AddChild(test1);
 				root.AddChild(test);
@@ -267,6 +277,7 @@ int main(void)
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		std::vector<glm::mat4> data;
 		std::vector<glm::mat4> data1;
+		std::vector<glm::mat4> data2;
 		root.calculateWorld(root, root.World());
 
 		for (unsigned int i = 0; i < root.NumOfChildren(); i++)
@@ -277,11 +288,32 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-		SceneNode lightS(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(2.0f));
+		SceneNode lightS(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(5.0f, 50.0f, 50.0f));
 		root.AddChild(lightS);
+		SceneNode ground(glm::vec3(0.0f, -0.2f, 0.0f), glm::vec3(2500.0f,1.0f, 2500.0f));
+		root.AddChild(ground);
 		root.calculateWorld(root, root.World());
+		data2.push_back(root.Children()[root.Children().size() - 1].World().Model);
 		VertexBuffer roofBuffer(data1);
 		VertexBuffer houseBuffer(data);
+		VertexBuffer groundBuffer(data2);
+
+		groundVao.Bind();
+		groundBuffer.Bind();
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+		groundBuffer.Unbind();
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+		groundVao.Unbind();
 
 		roofVAO.Bind();
 		roofBuffer.Bind();
@@ -396,13 +428,19 @@ int main(void)
 			houseTexture.Unbind();
 			//houseIbo.Unbind();
 
+			groundVao.Bind();
+			groundTexture.Bind(0);
+			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data2.size());
+			Renderer::Draw(groundVao, groundIbo, shader);
+			groundTexture.Unbind();
+
 			shader.Unbind();
 
 			light.Bind();
 			light.SetUniformMat4f("projection", projection);
 			light.SetUniformMat4f("view", view);
 			light.SetUniformMat4f("model", root.Children()[1].World().Model);
-			Renderer::Draw(lightVAO, light);
+			//Renderer::Draw(lightVAO, light);
 			//Renderer::Draw(lightVAO, houseIbo, light);
 			light.Unbind();
 			lightVAO.Unbind();
