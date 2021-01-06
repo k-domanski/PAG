@@ -39,6 +39,15 @@ struct DirLight
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+
+	bool isActive = true;
+
+	DirLight()
+	{
+		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+		specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	}
 };
 
 struct PointLight
@@ -53,9 +62,7 @@ struct PointLight
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 
-	PointLight(glm::vec3 pos, float con, float lin, float quad, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec)
-		:position(pos), constant(con), _linear(lin), quadratic(quad), ambient(amb), diffuse(diff), specular(spec)
-	{}
+	bool isActive = true;
 
 	PointLight()
 	{
@@ -79,6 +86,8 @@ struct PointLight
 		shader.SetUniformVec3f(lightName + ".ambient", ambient);
 		shader.SetUniformVec3f(lightName + ".diffuse", diffuse);
 		shader.SetUniformVec3f(lightName + ".specular", specular);
+
+		shader.setUniform1i(lightName + ".isActive", isActive);
 	}
 };
 
@@ -97,6 +106,25 @@ struct SpotLight
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+
+	bool isActive = true;
+
+	SpotLight()
+	{
+		cutOff = glm::cos(glm::radians(12.5f));
+		outerCutOff = glm::cos(glm::radians(17.5f));
+
+
+		constant = 1.0f;
+		_linear = 0.09f;
+		quadratic = 0.032f;
+
+		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+		specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+
+	}
 };
 
 void ProcessInput(GLFWwindow* window);
@@ -353,16 +381,16 @@ int main(void)
 		VertexBuffer roofBuffer(data1);
 		VertexBuffer houseBuffer(data);
 		VertexBuffer groundBuffer(data2);
-		//PointLight pointLigh(root.Children()[root.Children().size() - 2].World().Model[3], 1.0f, 0.09f, 0.032f, glm::vec3(0.2f, 0.2f, 0.2f),
-		//	glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
+		
+		
 		PointLight pointLigh;
 		PointLight pointLigh1;
 		pointLigh.position = root.Children()[root.Children().size() - 2].World().Model[3];
 		pointLigh1.position = root.Children()[root.Children().size() - 3].World().Model[3];
 		
-		PointLight lights[2];
-		lights[0] = pointLigh;
-		lights[1] = pointLigh1;
+		PointLight* lights[2];
+		lights[0] = &pointLigh;
+		lights[1] = &pointLigh1;
 		
 		groundVao.Bind();
 		groundBuffer.Bind();
@@ -432,8 +460,7 @@ int main(void)
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
 		bool isWireFrame = false;
-		bool isPaused = false;
-		int depth = 1;
+		bool showdemowindow = false;
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -478,7 +505,7 @@ int main(void)
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			for (int i = 0; i < 2; i++)
 			{
-				lights[i].SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
+				lights[i]->SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
 			}
 			
 			roofVAO.Bind();
@@ -525,16 +552,37 @@ int main(void)
 
 			{
 				ImGui::Begin("Hello, world!");
-
 				ImGui::Checkbox("Wireframe", &isWireFrame);
-				ImGui::Checkbox("Pause", &isPaused);
-				ImGui::SliderInt("Depth", &depth, 1, 20);
-				ImGui::ColorEdit3("clear color", (float*)& clear_color);
-
+				ImGui::Checkbox("Demo", &showdemowindow);
+				if (showdemowindow)
+					ImGui::ShowDemoWindow();
+				
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				if (ImGui::CollapsingHeader("Lights"))
+				{
+					if (ImGui::TreeNode("point1"))
+					{
+						ImGui::Checkbox("on/off", &pointLigh.isActive);
+						ImGui::ColorEdit3("ambient", (float*)& pointLigh.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& pointLigh.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& pointLigh.specular);
+						ImGui::TreePop();
+					}
+					
+					if (ImGui::TreeNode("point2"))
+					{
+						ImGui::Checkbox("on/off", &pointLigh1.isActive);
+						ImGui::ColorEdit3("ambient", (float*)& pointLigh1.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& pointLigh1.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& pointLigh1.specular);
+						ImGui::TreePop();
+					}
+					
+				}
 				ImGui::End();
 			}
 
+			
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

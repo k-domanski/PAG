@@ -45,6 +45,8 @@ struct PointLight
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+	bool isActive;
 };
 
 struct DirLight
@@ -54,6 +56,8 @@ struct DirLight
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+	bool isActive;
 };
 
 struct SpotLight
@@ -70,6 +74,8 @@ struct SpotLight
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+	bool isActive;
 };
 
 in vec3 fNormal;
@@ -102,7 +108,8 @@ void main()
 	result += calculateSpotLight(spotLight, fNormal, fPos, viewDir);
 	for (int i = 0; i < NUM_SPOT_LIGHT; i++)
 	{
-		result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
+		if(pointLight[i].isActive)
+			result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
 	}
 
 	FragColor = vec4(result, 1.0);
