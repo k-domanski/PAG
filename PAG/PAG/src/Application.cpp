@@ -177,13 +177,39 @@ int main(void)
 		/*3D roof*/
 		std::vector<float> roofVertices =
 		{
-			-0.0f,  0.1f, -0.05f, 1.0f, 0.0f, 0.0f,
-			 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
-			-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
+			-0.0f,   0.1f, -0.05f, 0.0f, 0.5f, -0.15f, 0.5f, 1.0f,
+			 0.05f, -0.05f, 0.0f,  0.0f, 0.5f, -0.15f, 1.0f, 0.0f,
+			-0.05f, -0.05f, 0.0f,  0.0f, 0.5f, -0.15f, 0.0f, 0.0f,
 
-			 0.05f, -0.05f,-0.1f, 0.0f, 1.0f, 0.0f,
-			 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f
+			-0.0f,   0.1f, -0.05f, 0.15f, 0.5f, 0.0f, 0.5f, 1.0f,
+			 0.05f, -0.05f, 0.0f,  0.15f, 0.5f, 0.0f, 1.0f, 0.0f,
+			 0.05f, -0.05f,-0.1f,  0.15f, 0.5f, 0.0f, 0.0f, 0.0f,
+
+			 -0.0f,   0.1f, -0.05f, 0.15f, 0.5f, 0.0f, 0.5f, 1.0f,
+			 -0.05f, -0.05f, 0.0f,  0.15f, 0.5f, 0.0f,	1.0f, 0.0f,
+			 -0.05f, -0.05f,-0.1f,  0.15f, 0.5f, 0.0f,	0.0f, 0.0f,
+
+			 -0.0f,   0.1f, -0.05f, 0.0f, 0.5f, -0.15f, 0.5f, 1.0f,
+			  0.05f, -0.05f,-0.1f,  0.0f, 0.5f, -0.15f,	1.0f, 0.0f,
+			 -0.05f, -0.05f,-0.1f,  0.0f, 0.5f, -0.15f,	0.0f, 0.0f,
+
+			 0.05f, -0.05f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			-0.05f, -0.05f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			 0.05f, -0.05f,-0.1f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+			 0.05f, -0.05f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+			-0.05f, -0.05f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+			-0.05f, -0.05f,-0.1f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 		};
+
+		//std::vector<float> roofVertices =
+		//{
+		//	-0.0f,  0.1f, -0.05f, 1.0f, 0.0f, 0.0f,
+		//	 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
+		//	-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
+		//
+		//	 0.05f, -0.05f,-0.1f, 0.0f, 1.0f, 0.0f,
+		//	 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f
+		//};
 		
 		std::vector<unsigned int> roofIndices =
 		{
@@ -198,13 +224,13 @@ int main(void)
 			1, 2, 4
 		};
 		
-		IndexBuffer roofIbo(roofIndices);
+		//IndexBuffer roofIbo(roofIndices);
 		
 		
 		Shader shader("res/shaders/Basic.shader", 0);
 		Shader light("res/shaders/LightSource.shader", 1);
 
-		Texture texture("brickWall.jpg", "res/textures", "diffuse");
+		Texture texture("roof.png", "res/textures", "diffuse");
 		texture.Bind(0);
 
 		VertexArray lightVAO;
@@ -349,18 +375,19 @@ int main(void)
 			//shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			
-			//roofVAO.Bind();
+			roofVAO.Bind();
 			//roofIbo.Bind();
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
 			//glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
-			//roofVAO.Unbind();
+			roofVAO.Unbind();
 			//roofIbo.Unbind();
 
-			houseVAO.Bind();
-			houseIbo.Bind();
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
-			//glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
-			houseVAO.Unbind();
-			houseIbo.Unbind();
+			//houseVAO.Bind();
+			//houseIbo.Bind();
+			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
+			////glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
+			//houseVAO.Unbind();
+			//houseIbo.Unbind();
 
 			shader.Unbind();
 
