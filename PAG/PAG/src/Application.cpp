@@ -230,8 +230,12 @@ int main(void)
 		Shader shader("res/shaders/Basic.shader", 0);
 		Shader light("res/shaders/LightSource.shader", 1);
 
-		Texture texture("roof.png", "res/textures", "diffuse");
-		texture.Bind(0);
+		Texture roofTexture("roof.png", "res/textures", "diffuse");
+		roofTexture.Bind(0);
+		Texture houseTexture("brickWall.jpg", "res/textures", "diffuse");
+		houseTexture.Bind(0);
+		roofTexture.Unbind();
+		houseTexture.Unbind();
 
 		VertexArray lightVAO;
 
@@ -376,17 +380,20 @@ int main(void)
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			
 			roofVAO.Bind();
-			//roofIbo.Bind();
+			roofTexture.Bind(0);
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
 			//glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
 			roofVAO.Unbind();
+			roofTexture.Unbind();
 			//roofIbo.Unbind();
 
 			houseVAO.Bind();
+			houseTexture.Bind(0);
 			//houseIbo.Bind();
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
 			////glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
 			houseVAO.Unbind();
+			houseTexture.Unbind();
 			//houseIbo.Unbind();
 
 			shader.Unbind();
