@@ -249,12 +249,12 @@ int main(void)
 		lightVAO.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -5; i < 5; i++)
+		for (int i = -100; i < 101; i++)
 		{
-			for (int j = -5; j < 5; j++)
+			for (int j = -100; j < 101; j++)
 			{
-				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
-				SceneNode test1(glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f));
+				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(1.0f));
+				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
 				test.AddChild(test1);
 				root.AddChild(test);
 			}
@@ -276,8 +276,8 @@ int main(void)
 		SceneNode lightS(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(2.0f));
 		root.AddChild(lightS);
 		root.calculateWorld(root, root.World());
-		VertexBuffer roofBuffer(data);
-		VertexBuffer houseBuffer(data1);
+		VertexBuffer roofBuffer(data1);
+		VertexBuffer houseBuffer(data);
 
 		roofVAO.Bind();
 		roofBuffer.Bind();
@@ -382,11 +382,11 @@ int main(void)
 			roofVAO.Unbind();
 			//roofIbo.Unbind();
 
-			//houseVAO.Bind();
+			houseVAO.Bind();
 			//houseIbo.Bind();
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
 			////glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
-			//houseVAO.Unbind();
+			houseVAO.Unbind();
 			//houseIbo.Unbind();
 
 			shader.Unbind();
