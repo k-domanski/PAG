@@ -342,6 +342,7 @@ int main(void)
 			shader.SetUniformVec3f("light.position", gCamera.Position);
 			shader.SetUniformVec3f("light.direction", gCamera.Front);
 			shader.SetUniform1f("light.cutOff", glm::cos(glm::radians(12.5f)));
+			shader.SetUniform1f("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 			shader.SetUniform1f("light.constant", 1.0f);
 			shader.SetUniform1f("light._linear", 0.09f);
 			shader.SetUniform1f("light.quadratic", 0.032f);
