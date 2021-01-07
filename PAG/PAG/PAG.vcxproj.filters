@@ -133,5 +133,6 @@
     <None Include="res\shaders\GeometryTest.shader" />
     <None Include="res\shaders\Test.shader" />
     <None Include="res\shaders\LightSource.shader" />
+    <None Include="res\shaders\PBR.shader" />
   </ItemGroup>
 </Project>

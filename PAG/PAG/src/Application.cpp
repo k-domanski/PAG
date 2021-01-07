@@ -160,6 +160,31 @@ struct SpotLight
 	}
 };
 
+struct PBRMaterial
+{
+	glm::vec3 albedo;
+	float metallic;
+	float roughness;
+	float ao;
+
+	PBRMaterial()
+	{
+		albedo = glm::vec3(0.5f, 0.0f, 0.0f);
+		metallic = 0.5f;
+		roughness = 0.5f;
+		ao = 1.0f;
+	}
+
+	void SetUniforms(Shader& shader, const std::string& materialName)
+	{
+
+		shader.SetUniformVec3f(materialName + ".albedo", albedo);
+		shader.SetUniform1f(materialName + ".metallic", metallic);
+		shader.SetUniform1f(materialName + ".roughness", roughness);
+		shader.SetUniform1f(materialName + ".ao", ao);
+	}
+};
+
 void ProcessInput(GLFWwindow* window);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -350,6 +375,7 @@ int main(void)
 		
 		Shader shader("res/shaders/Basic.shader", 0);
 		Shader light("res/shaders/LightSource.shader", 1);
+		Shader PBR("res/shaders/PBR.shader", 2);
 
 		Texture roofTexture("roof.png", "res/textures", "diffuse");
 		roofTexture.Bind(0);
@@ -449,6 +475,7 @@ int main(void)
 		spotLights[1] = &spotLight2;
 		spotLights[2] = &spotLight3;
 		
+		PBRMaterial pbrMaterial;
 
 		groundVao.Bind();
 		groundBuffer.Bind();
@@ -511,6 +538,7 @@ int main(void)
 		glm::vec3 rotDir = glm::vec3(0.0f, 0.0f, 1.0f);
 		bool isWireFrame = false;
 		bool showdemowindow = false;
+		bool isPBR = false;
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -529,64 +557,105 @@ int main(void)
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
-			
-			shader.Bind();
-			shader.SetUniformMat4f("projection", projection);
-			shader.SetUniformMat4f("view", view);
-			
-			shader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-			shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-			shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-
-			shader.SetUniform1f("material.shininess", 32.0f);
-
-			shader.SetUniformVec3f("spotLight[0].position", gCamera.Position);
-			shader.SetUniformVec3f("spotLight[0].direction", gCamera.Front);
-
-			shader.SetUniformVec3f("spotLight[1].position", spotLight2.position);
-			shader.SetUniformVec3f("spotLight[1].direction", spotLight2.direction);
-			shader.SetUniformVec3f("spotLight[2].position", spotLight3.position);
-			shader.SetUniformVec3f("spotLight[2].direction", spotLight3.direction);
-			
-			shader.SetUniformVec3f("viewPos", gCamera.Position);
 			glm::mat4 test = glm::rotate(glm::mat4(1.0f), 0.01f, rotDir);
 			root.Children()[root.Children().size() - 5].World().Model = test * root.Children()[root.Children().size() - 5].World().Model;
-			//root.calculateWorld(root, root.World());
 			pointLights[0]->position = root.Children()[root.Children().size() - 5].World().Model[3];
-
-			for (int i = 0; i < N_POINT; i++)
+			
+			if (isPBR)
 			{
-				pointLights[i]->SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
+				PBR.Bind();
+				PBR.SetUniformMat4f("projection", projection);
+				PBR.SetUniformMat4f("view", view);
+
+				pbrMaterial.SetUniforms(PBR, "material");
+				PBR.SetUniformVec3f("viewPos", gCamera.Position);
+
+				for (int i = 0; i < N_POINT; i++)
+				{
+					pointLights[i]->SetUniforms(PBR, "pointLight[" + std::to_string(i) + "]");
+				}
+				/*roof Draw*/
+				roofVAO.Bind();
+				roofTexture.Bind(0);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
+				roofVAO.Unbind();
+				roofTexture.Unbind();
+
+				/*house Draw*/
+				houseVAO.Bind();
+				houseTexture.Bind(0);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
+				houseVAO.Unbind();
+				houseTexture.Unbind();
+
+				/*ground Draw*/
+				groundVao.Bind();
+				groundTexture.Bind(0);
+				Renderer::Draw(groundVao, groundIbo, PBR);
+				groundTexture.Unbind();
+
+				PBR.Unbind();
+			}
+			else
+			{
+				shader.Bind();
+				shader.SetUniformMat4f("projection", projection);
+				shader.SetUniformMat4f("view", view);
+
+				shader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+				shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+				shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+
+				shader.SetUniform1f("material.shininess", 32.0f);
+
+				shader.SetUniformVec3f("spotLight[0].position", gCamera.Position);
+				shader.SetUniformVec3f("spotLight[0].direction", gCamera.Front);
+
+				shader.SetUniformVec3f("spotLight[1].position", spotLight2.position);
+				shader.SetUniformVec3f("spotLight[1].direction", spotLight2.direction);
+				shader.SetUniformVec3f("spotLight[2].position", spotLight3.position);
+				shader.SetUniformVec3f("spotLight[2].direction", spotLight3.direction);
+
+				shader.SetUniformVec3f("viewPos", gCamera.Position);
+				
+
+				for (int i = 0; i < N_POINT; i++)
+				{
+					pointLights[i]->SetUniforms(shader, "pointLight[" + std::to_string(i) + "]");
+				}
+
+				for (int i = 0; i < N_DIR; i++)
+					directional.SetUniforms(shader, "dirLight[0]");
+
+				for (int i = 0; i < N_SPOT; i++)
+					spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
+
+				/*roof Draw*/
+				roofVAO.Bind();
+				roofTexture.Bind(0);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
+				roofVAO.Unbind();
+				roofTexture.Unbind();
+
+				/*house Draw*/
+				houseVAO.Bind();
+				houseTexture.Bind(0);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
+				houseVAO.Unbind();
+				houseTexture.Unbind();
+
+				/*ground Draw*/
+				groundVao.Bind();
+				groundTexture.Bind(0);
+				Renderer::Draw(groundVao, groundIbo, shader);
+				groundTexture.Unbind();
+
+				shader.Unbind();
 			}
 			
-			for(int i =0; i< N_DIR; i++)
-				directional.SetUniforms(shader, "dirLight[0]");
-			
-			for(int i=0; i<N_SPOT; i++)
-				spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
 			
 			
-			/*roof Draw*/
-			roofVAO.Bind();
-			roofTexture.Bind(0);
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
-			roofVAO.Unbind();
-			roofTexture.Unbind();
-
-			/*house Draw*/
-			houseVAO.Bind();
-			houseTexture.Bind(0);
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
-			houseVAO.Unbind();
-			houseTexture.Unbind();
-
-			/*ground Draw*/
-			groundVao.Bind();
-			groundTexture.Bind(0);
-			Renderer::Draw(groundVao, groundIbo, shader);
-			groundTexture.Unbind();
-
-			shader.Unbind();
+			
 
 			/*light container draw*/
 			light.Bind();
@@ -612,7 +681,7 @@ int main(void)
 			{
 				glm::mat4 s = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
 				glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::vec3(directional.direction.x, -directional.direction.y,directional.direction.z) * 10.0f);
-				light.SetUniformMat4f("model", m * s);//* root.Children()[root.Children().size() - 7].World().Model);
+				light.SetUniformMat4f("model", m * s);
 				if(directional.isActive)
 					Renderer::Draw(lightVAO, light);
 			}
@@ -627,75 +696,106 @@ int main(void)
 			{
 				ImGui::Begin("Hello, world!");
 				ImGui::Checkbox("Wireframe", &isWireFrame);
+				ImGui::Checkbox("PBR", &isPBR);
 				//ImGui::Checkbox("Demo", &showdemowindow);
-				if (showdemowindow)
-					ImGui::ShowDemoWindow();
+				//if (showdemowindow)
+				//	ImGui::ShowDemoWindow();
 				
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 				if (ImGui::CollapsingHeader("Lights"))
 				{
-					if (ImGui::TreeNode("point1"))
+					if (isPBR)
 					{
-						ImGui::Checkbox("on/off", &pointLight.isActive);
-						ImGui::SliderFloat3("position", (float*)& pointLight.position, -100.0f, 100.0f);
-						ImGui::SliderFloat3("direction", (float*)& rotDir, -1.0f, 1.0f);
-						ImGui::ColorEdit3("ambient", (float*)& pointLight.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& pointLight.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& pointLight.specular);
-						ImGui::TreePop();
+						if (ImGui::TreeNode("material"))
+						{
+							ImGui::SliderFloat3("albedo", (float*)& pbrMaterial.albedo, -1.0f, 1.0f);
+							ImGui::SliderFloat("metallic", (float*)& pbrMaterial.metallic, 0.0f, 1.0f);
+							ImGui::SliderFloat("roughness", (float*)& pbrMaterial.roughness, 0.0f, 1.0f);
+							ImGui::SliderFloat("ao", (float*)& pbrMaterial.ao, 0.0f, 1.0f);
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNode("point1"))
+						{
+							ImGui::Checkbox("on/off", &pointLight.isActive);
+							ImGui::ColorEdit3("position", (float*)& pointLight.position);
+							ImGui::ColorEdit3("diffuse", (float*)& pointLight.diffuse);
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("point2"))
+						{
+							ImGui::Checkbox("on/off", &pointLight1.isActive);
+							ImGui::ColorEdit3("position", (float*)& pointLight1.position);
+							ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
+							ImGui::TreePop();
+						}
+					}
+					else
+					{
+						if (ImGui::TreeNode("point1"))
+						{
+							ImGui::Checkbox("on/off", &pointLight.isActive);
+							ImGui::SliderFloat3("position", (float*)& pointLight.position, -100.0f, 100.0f);
+							ImGui::SliderFloat3("direction", (float*)& rotDir, -1.0f, 1.0f);
+							ImGui::ColorEdit3("ambient", (float*)& pointLight.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& pointLight.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& pointLight.specular);
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("point2"))
+						{
+							ImGui::Checkbox("on/off", &pointLight1.isActive);
+							ImGui::ColorEdit3("ambient", (float*)& pointLight1.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& pointLight1.specular);
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("directional"))
+						{
+							ImGui::Checkbox("on/off", &directional.isActive);
+							ImGui::SliderFloat3("direction", (float*)& directional.direction, -1.0f, 1.0f);
+							ImGui::SliderFloat("intensity", (float*)& directional.intensity, 0.0f, 1.0f);
+							ImGui::ColorEdit3("ambient", (float*)& directional.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& directional.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& directional.specular);
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("spotlight1"))
+						{
+							ImGui::Checkbox("on/off", &spotLight1.isActive);
+							//ImGui::SliderFloat3("direction", (float*)& spotLight1.direction, -1.0f, 1.0f);
+							//ImGui::SliderFloat3("position", (float*)& spotLight1.position, -10.0f, 10.0f);
+							ImGui::ColorEdit3("ambient", (float*)& spotLight1.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& spotLight1.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& spotLight1.specular);
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("spotlight2"))
+						{
+							ImGui::Checkbox("on/off", &spotLight2.isActive);
+							ImGui::SliderFloat3("direction", (float*)& spotLight2.direction, -1.0f, 1.0f);
+							ImGui::SliderFloat3("position", (float*)& spotLight2.position, -10.0f, 10.0f);
+							ImGui::ColorEdit3("ambient", (float*)& spotLight2.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& spotLight2.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& spotLight2.specular);
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNode("spotlight3"))
+						{
+							ImGui::Checkbox("on/off", &spotLight3.isActive);
+							ImGui::SliderFloat3("direction", (float*)& spotLight3.direction, -1.0f, 1.0f);
+							ImGui::SliderFloat3("position", (float*)& spotLight3.position, -10.0f, 10.0f);
+							ImGui::ColorEdit3("ambient", (float*)& spotLight3.ambient);
+							ImGui::ColorEdit3("diffuse", (float*)& spotLight3.diffuse);
+							ImGui::ColorEdit3("specular", (float*)& spotLight3.specular);
+							ImGui::TreePop();
+						}
 					}
 					
-					if (ImGui::TreeNode("point2"))
-					{
-						ImGui::Checkbox("on/off", &pointLight1.isActive);
-						ImGui::ColorEdit3("ambient", (float*)& pointLight1.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& pointLight1.specular);
-						ImGui::TreePop();
-					}
-
-					if (ImGui::TreeNode("directional"))
-					{
-						ImGui::Checkbox("on/off", &directional.isActive);
-						ImGui::SliderFloat3("direction", (float*)& directional.direction, -1.0f, 1.0f);
-						ImGui::SliderFloat("intensity", (float*)& directional.intensity, 0.0f, 1.0f);
-						ImGui::ColorEdit3("ambient", (float*)& directional.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& directional.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& directional.specular);
-						ImGui::TreePop();
-					}
-
-					if (ImGui::TreeNode("spotlight1"))
-					{
-						ImGui::Checkbox("on/off", &spotLight1.isActive);
-						//ImGui::SliderFloat3("direction", (float*)& spotLight1.direction, -1.0f, 1.0f);
-						//ImGui::SliderFloat3("position", (float*)& spotLight1.position, -10.0f, 10.0f);
-						ImGui::ColorEdit3("ambient", (float*)& spotLight1.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& spotLight1.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& spotLight1.specular);
-						ImGui::TreePop();
-					}
-
-					if (ImGui::TreeNode("spotlight2"))
-					{
-						ImGui::Checkbox("on/off", &spotLight2.isActive);
-						ImGui::SliderFloat3("direction", (float*)& spotLight2.direction, -1.0f, 1.0f);
-						ImGui::SliderFloat3("position", (float*)& spotLight2.position, -10.0f, 10.0f);
-						ImGui::ColorEdit3("ambient", (float*)& spotLight2.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& spotLight2.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& spotLight2.specular);
-						ImGui::TreePop();
-					}
-					if (ImGui::TreeNode("spotlight3"))
-					{
-						ImGui::Checkbox("on/off", &spotLight3.isActive);
-						ImGui::SliderFloat3("direction", (float*)& spotLight3.direction, -1.0f, 1.0f);
-						ImGui::SliderFloat3("position", (float*)& spotLight3.position, -10.0f, 10.0f);
-						ImGui::ColorEdit3("ambient", (float*)& spotLight3.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& spotLight3.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& spotLight3.specular);
-						ImGui::TreePop();
-					}
 					
 				}
 				ImGui::End();
