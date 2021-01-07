@@ -582,7 +582,7 @@ int main(void)
 				}
 
 				for (int i = 0; i < N_DIR; i++)
-					directional.SetUniforms(shader, "dirLight[" + std::to_string(i) + "]");
+					directional.SetUniforms(PBR, "dirLight[" + std::to_string(i) + "]");
 				/*roof Draw*/
 				roofVAO.Bind();
 				roofTexture.Bind(0);
