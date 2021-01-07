@@ -58,6 +58,7 @@ struct DirLight
 	vec3 specular;
 
 	bool isActive;
+	float intensity;
 };
 
 struct SpotLight
@@ -82,12 +83,14 @@ in vec3 fNormal;
 in vec3 fPos;
 in vec2 fTextCoord;
 
-#define NUM_SPOT_LIGHT 2
+#define NUM_DIR_LIGHT 1
+#define NUM_SPOT_LIGHT 3
+#define NUM_POINT_LIGHT 2
 
 uniform Material material;
-uniform DirLight dirLight;
-uniform PointLight pointLight[NUM_SPOT_LIGHT];
-uniform SpotLight spotLight;// [NUM_SPOT_LIGHT] ;
+uniform DirLight dirLight[NUM_DIR_LIGHT];
+uniform PointLight pointLight[NUM_POINT_LIGHT];
+uniform SpotLight spotLight[NUM_SPOT_LIGHT];
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -103,10 +106,20 @@ void main()
 	vec3 viewDir = normalize(viewPos - fPos);
 	
 	vec3 result = vec3(0.0);
-	//result += calculateDirLight(dirLight, fNormal, fPos, viewDir);
+
+	for (int i = 0; i < NUM_DIR_LIGHT; i++)
+	{
+		if (dirLight[i].isActive)
+			result += calculateDirLight(dirLight[i], fNormal, viewDir);
+	}
 	
-	result += calculateSpotLight(spotLight, fNormal, fPos, viewDir);
 	for (int i = 0; i < NUM_SPOT_LIGHT; i++)
+	{
+		if (spotLight[i].isActive)
+			result += calculateSpotLight(spotLight[i], fNormal, fPos, viewDir);
+	}
+
+	for (int i = 0; i < NUM_POINT_LIGHT; i++)
 	{
 		if(pointLight[i].isActive)
 			result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
@@ -130,11 +143,13 @@ vec3 calculateDirLight(DirLight light, vec3 normal, vec3 viewDir)
 	/*specular*/
 	//vec3 viewDir = normalize(viewPos - fPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = light.specular * (spec * material.specular);
 
 
-	vec3 result = (ambient + diffuse + specular);
+	vec3 result = (ambient + diffuse + specular) * light.intensity;
 	return result;
 }
 
@@ -151,7 +166,9 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
 
 	/*specular*/
 	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = light.specular * spec * material.specular;
 
 	float distance = length(light.position - fragPos);
@@ -181,16 +198,18 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 
 	/*specular*/
 	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = light.specular * spec * material.specular;
 
 	/*soft edges*/
 	float theta = dot(lightDir, normalize(-light.direction));
 	float epsilon = (light.cutOff - light.outerCutOff);
-	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+	float intens = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
 
-	diffuse *= intensity;
-	specular *= intensity;
+	diffuse *= intens;
+	specular *= intens;
 
 	/*attenuation*/
 	float distance = length(light.position - fragPos);

@@ -24,6 +24,11 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+const unsigned int N_DIR = 1;
+const unsigned int N_POINT = 2;
+const unsigned int N_SPOT = 3;
+
+
 Camera gCamera(glm::vec3(0.0f, 30.0f, 30.0f));
 float gLastX = SCR_WIDTH / 2.0f;
 float gLastY = SCR_HEIGHT / 2.0f;
@@ -34,19 +39,32 @@ float gLastFrame = 0.0f;
 
 struct DirLight
 {
-	glm::vec3 direction;
+	glm::vec3 direction = glm::vec3(-1.0f,-1.0f, 0.0f);
 
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 
 	bool isActive = true;
+	float intensity = 1.0f;
 
 	DirLight()
 	{
-		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 		specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	}
+
+	void SetUniforms(Shader& shader, const std::string& lightName)
+	{
+		shader.SetUniformVec3f(lightName + ".direction", direction);
+
+		shader.SetUniformVec3f(lightName + ".ambient", ambient);
+		shader.SetUniformVec3f(lightName + ".diffuse", diffuse);
+		shader.SetUniformVec3f(lightName + ".specular", specular);
+
+		shader.setUniform1i(lightName + ".isActive", isActive);
+		shader.SetUniform1f(lightName + ".intensity", intensity);
 	}
 };
 
@@ -67,8 +85,8 @@ struct PointLight
 	PointLight()
 	{
 		constant = 1.0f;
-		_linear = 0.09f;
-		quadratic = 0.032f;
+		_linear = 0.007f;//0.0014f;//0.09f;
+		quadratic = 0.0002f;//0.000007f;//0.032f;
 
 		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -114,16 +132,31 @@ struct SpotLight
 		cutOff = glm::cos(glm::radians(12.5f));
 		outerCutOff = glm::cos(glm::radians(17.5f));
 
-
 		constant = 1.0f;
 		_linear = 0.09f;
 		quadratic = 0.032f;
 
-		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+		ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 		specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	}
 
+	void SetUniforms(Shader& shader, const std::string& lightName)
+	{
+		//shader.SetUniformVec3f(lightName + ".position", position);
+		//shader.SetUniformVec3f(lightName + ".direction", direction);
 
+		shader.SetUniform1f(lightName + ".cutOff", cutOff);
+		shader.SetUniform1f(lightName + ".outerCutOff", outerCutOff);
+		shader.SetUniform1f(lightName + ".constant", constant);
+		shader.SetUniform1f(lightName + "._linear", _linear);
+		shader.SetUniform1f(lightName + ".quadratic", quadratic);
+
+		shader.SetUniformVec3f(lightName + ".ambient", ambient);
+		shader.SetUniformVec3f(lightName + ".diffuse", diffuse);
+		shader.SetUniformVec3f(lightName + ".specular", specular);
+
+		shader.setUniform1i(lightName + ".isActive", isActive);
 	}
 };
 
@@ -346,9 +379,11 @@ int main(void)
 		groundVao.AddBuffer(houseVBO, layout);
 	
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
-		for (int i = -10; i < 11; i++)
+		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		for (int i = -100; i < 101; i++)
 		{
-			for (int j = -10; j < 11; j++)
+			for (int j = -100; j < 101; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
@@ -370,10 +405,18 @@ int main(void)
 				data1.push_back(root.Children()[i].Children()[j].World().Model);
 			}
 		}
-		SceneNode lightS(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(1.0f));
-		root.AddChild(lightS);
-		SceneNode pointL(glm::vec3(0.5f, 1.5f, 0.0f), glm::vec3(1.0f));
-		root.AddChild(pointL);
+		SceneNode dl1(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f));
+		root.AddChild(dl1);
+		SceneNode pl1(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(4.0f));
+		root.AddChild(pl1);
+		SceneNode pl2(glm::vec3(0.5f, 25.0f, 0.0f), glm::vec3(4.0f));
+		root.AddChild(pl2);
+		SceneNode sl1(glm::vec3(0.5f, 125.0f, 0.0f), glm::vec3(1.0f));
+		root.AddChild(sl1);
+		SceneNode sl2(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f));
+		root.AddChild(sl2);
+		SceneNode sl3(glm::vec3(5.f, 5.0f, 5.0f), glm::vec3(1.0f));
+		root.AddChild(sl3);
 		SceneNode ground(glm::vec3(0.0f, -0.2f, 0.0f), glm::vec3(2500.0f,1.0f, 2500.0f));
 		root.AddChild(ground);
 		root.calculateWorld(root, root.World());
@@ -383,15 +426,30 @@ int main(void)
 		VertexBuffer groundBuffer(data2);
 		
 		
-		PointLight pointLigh;
-		PointLight pointLigh1;
-		pointLigh.position = root.Children()[root.Children().size() - 2].World().Model[3];
-		pointLigh1.position = root.Children()[root.Children().size() - 3].World().Model[3];
+		PointLight pointLight;
+		PointLight pointLight1;
+		pointLight.position = root.Children()[root.Children().size() - 5].World().Model[3];
+		pointLight1.position = root.Children()[root.Children().size() - 6].World().Model[3];
 		
-		PointLight* lights[2];
-		lights[0] = &pointLigh;
-		lights[1] = &pointLigh1;
+		PointLight* pointLights[2];
+		pointLights[0] = &pointLight;
+		pointLights[1] = &pointLight1;
 		
+		DirLight directional;
+		SpotLight spotLight1;
+		SpotLight spotLight2;
+		SpotLight spotLight3;
+		spotLight2.position = glm::vec3(0.0f, 5.0f, 0.0f);
+		spotLight2.direction = glm::vec3(1.0f, -1.0f, 0.0f);
+
+		spotLight3.position = glm::vec3(5.0f, 5.0f, 5.0f);
+		spotLight3.direction = glm::vec3(0.0f, -1.0f, 0.0f);
+		SpotLight* spotLights[N_SPOT];
+		spotLights[0] = &spotLight1;
+		spotLights[1] = &spotLight2;
+		spotLights[2] = &spotLight3;
+		
+
 		groundVao.Bind();
 		groundBuffer.Bind();
 		glEnableVertexAttribArray(3);
@@ -443,14 +501,6 @@ int main(void)
 		glVertexAttribDivisor(6, 1);
 		houseVAO.Unbind();
 
-
-		//vao.Bind();
-		//glEnableVertexAttribArray(2);
-		//glBindBuffer(GL_ARRAY_BUFFER, trans.GetID()); // this attribute comes from a different vertex buffer
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-		//glVertexAttribDivisor(2, 1);
-
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 150");
@@ -458,7 +508,7 @@ int main(void)
 		ImGui::StyleColorsDark();
 		
 		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-
+		glm::vec3 rotDir = glm::vec3(0.0f, 0.0f, 1.0f);
 		bool isWireFrame = false;
 		bool showdemowindow = false;
 		/* Loop until the user closes the window */
@@ -479,6 +529,7 @@ int main(void)
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view = gCamera.GetViewMatrix();
+			
 			shader.Bind();
 			shader.SetUniformMat4f("projection", projection);
 			shader.SetUniformMat4f("view", view);
@@ -487,61 +538,84 @@ int main(void)
 			shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 			shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-			//shader.SetUniformVec3f("light.direction", glm::vec3(1.0f, 1.0f, 1.0f));
-			shader.SetUniformVec3f("spotLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-			shader.SetUniformVec3f("spotLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-			shader.SetUniformVec3f("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			shader.SetUniform1f("material.shininess", 64.0f);
+			shader.SetUniform1f("material.shininess", 32.0f);
 
-			//shader.SetUniformVec3f("light.position", root.Children()[1].World().Model[3]);
-			shader.SetUniformVec3f("spotLight.position", gCamera.Position);
-			shader.SetUniformVec3f("spotLight.direction", gCamera.Front);
-			shader.SetUniform1f("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-			shader.SetUniform1f("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
-			shader.SetUniform1f("spotLight.constant", 1.0f);
-			shader.SetUniform1f("spotLight._linear", 0.09f);
-			shader.SetUniform1f("spotLight.quadratic", 0.032f);
-			//shader.SetUniformVec3f("lightPos", root.Children()[1].World().Model[3]);
+			shader.SetUniformVec3f("spotLight[0].position", gCamera.Position);
+			shader.SetUniformVec3f("spotLight[0].direction", gCamera.Front);
+
+			shader.SetUniformVec3f("spotLight[1].position", spotLight2.position);
+			shader.SetUniformVec3f("spotLight[1].direction", spotLight2.direction);
+			shader.SetUniformVec3f("spotLight[2].position", spotLight3.position);
+			shader.SetUniformVec3f("spotLight[2].direction", spotLight3.direction);
+			
 			shader.SetUniformVec3f("viewPos", gCamera.Position);
-			for (int i = 0; i < 2; i++)
+			glm::mat4 test = glm::rotate(glm::mat4(1.0f), 0.01f, rotDir);
+			root.Children()[root.Children().size() - 5].World().Model = test * root.Children()[root.Children().size() - 5].World().Model;
+			//root.calculateWorld(root, root.World());
+			pointLights[0]->position = root.Children()[root.Children().size() - 5].World().Model[3];
+
+			for (int i = 0; i < N_POINT; i++)
 			{
-				lights[i]->SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
+				pointLights[i]->SetUniforms(shader, "pointLight["  + std::to_string(i) + "]");
 			}
 			
+			for(int i =0; i< N_DIR; i++)
+				directional.SetUniforms(shader, "dirLight[0]");
+			
+			for(int i=0; i<N_SPOT; i++)
+				spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
+			
+			
+			/*roof Draw*/
 			roofVAO.Bind();
 			roofTexture.Bind(0);
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
-			//glDrawElementsInstanced(GL_TRIANGLES, roofIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data.size());
 			roofVAO.Unbind();
 			roofTexture.Unbind();
-			//roofIbo.Unbind();
 
+			/*house Draw*/
 			houseVAO.Bind();
 			houseTexture.Bind(0);
-			//houseIbo.Bind();
 			glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
-			////glDrawElementsInstanced(GL_TRIANGLES, houseIbo.GetCount(), GL_UNSIGNED_INT, nullptr, data1.size());
 			houseVAO.Unbind();
 			houseTexture.Unbind();
-			//houseIbo.Unbind();
 
+			/*ground Draw*/
 			groundVao.Bind();
 			groundTexture.Bind(0);
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data2.size());
 			Renderer::Draw(groundVao, groundIbo, shader);
 			groundTexture.Unbind();
 
 			shader.Unbind();
 
+			/*light container draw*/
 			light.Bind();
 			light.SetUniformMat4f("projection", projection);
 			light.SetUniformMat4f("view", view);
-			for (int i = -3; i < -1; i++)
-			{
-				light.SetUniformMat4f("model", root.Children()[root.Children().size() + i].World().Model);
+			
+			
+			light.SetUniformMat4f("model", root.Children()[root.Children().size()  - 6].World().Model);
+			if(pointLight1.isActive)
 				Renderer::Draw(lightVAO, light);
+			light.SetUniformMat4f("model", root.Children()[root.Children().size()  - 5].World().Model);
+			if(pointLight.isActive)
+				Renderer::Draw(lightVAO, light);
+			
+			for (int i = 0; i < N_SPOT; i++)
+			{
+				glm::mat4 m = glm::mat4(1.0f);
+				m = glm::translate(m, spotLights[i]->position);
+				light.SetUniformMat4f("model", m);
+				if (spotLights[i]->isActive)
+					Renderer::Draw(lightVAO, light);
 			}
-			//Renderer::Draw(lightVAO, houseIbo, light);
+			{
+				glm::mat4 s = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
+				glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::vec3(directional.direction.x, -directional.direction.y,directional.direction.z) * 10.0f);
+				light.SetUniformMat4f("model", m * s);//* root.Children()[root.Children().size() - 7].World().Model);
+				if(directional.isActive)
+					Renderer::Draw(lightVAO, light);
+			}
 			light.Unbind();
 			lightVAO.Unbind();
 
@@ -553,7 +627,7 @@ int main(void)
 			{
 				ImGui::Begin("Hello, world!");
 				ImGui::Checkbox("Wireframe", &isWireFrame);
-				ImGui::Checkbox("Demo", &showdemowindow);
+				//ImGui::Checkbox("Demo", &showdemowindow);
 				if (showdemowindow)
 					ImGui::ShowDemoWindow();
 				
@@ -562,19 +636,64 @@ int main(void)
 				{
 					if (ImGui::TreeNode("point1"))
 					{
-						ImGui::Checkbox("on/off", &pointLigh.isActive);
-						ImGui::ColorEdit3("ambient", (float*)& pointLigh.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& pointLigh.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& pointLigh.specular);
+						ImGui::Checkbox("on/off", &pointLight.isActive);
+						ImGui::SliderFloat3("position", (float*)& pointLight.position, -100.0f, 100.0f);
+						ImGui::SliderFloat3("direction", (float*)& rotDir, -1.0f, 1.0f);
+						ImGui::ColorEdit3("ambient", (float*)& pointLight.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& pointLight.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& pointLight.specular);
 						ImGui::TreePop();
 					}
 					
 					if (ImGui::TreeNode("point2"))
 					{
-						ImGui::Checkbox("on/off", &pointLigh1.isActive);
-						ImGui::ColorEdit3("ambient", (float*)& pointLigh1.ambient);
-						ImGui::ColorEdit3("diffuse", (float*)& pointLigh1.diffuse);
-						ImGui::ColorEdit3("specular", (float*)& pointLigh1.specular);
+						ImGui::Checkbox("on/off", &pointLight1.isActive);
+						ImGui::ColorEdit3("ambient", (float*)& pointLight1.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& pointLight1.specular);
+						ImGui::TreePop();
+					}
+
+					if (ImGui::TreeNode("directional"))
+					{
+						ImGui::Checkbox("on/off", &directional.isActive);
+						ImGui::SliderFloat3("direction", (float*)& directional.direction, -1.0f, 1.0f);
+						ImGui::SliderFloat("intensity", (float*)& directional.intensity, 0.0f, 1.0f);
+						ImGui::ColorEdit3("ambient", (float*)& directional.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& directional.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& directional.specular);
+						ImGui::TreePop();
+					}
+
+					if (ImGui::TreeNode("spotlight1"))
+					{
+						ImGui::Checkbox("on/off", &spotLight1.isActive);
+						//ImGui::SliderFloat3("direction", (float*)& spotLight1.direction, -1.0f, 1.0f);
+						//ImGui::SliderFloat3("position", (float*)& spotLight1.position, -10.0f, 10.0f);
+						ImGui::ColorEdit3("ambient", (float*)& spotLight1.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& spotLight1.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& spotLight1.specular);
+						ImGui::TreePop();
+					}
+
+					if (ImGui::TreeNode("spotlight2"))
+					{
+						ImGui::Checkbox("on/off", &spotLight2.isActive);
+						ImGui::SliderFloat3("direction", (float*)& spotLight2.direction, -1.0f, 1.0f);
+						ImGui::SliderFloat3("position", (float*)& spotLight2.position, -10.0f, 10.0f);
+						ImGui::ColorEdit3("ambient", (float*)& spotLight2.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& spotLight2.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& spotLight2.specular);
+						ImGui::TreePop();
+					}
+					if (ImGui::TreeNode("spotlight3"))
+					{
+						ImGui::Checkbox("on/off", &spotLight3.isActive);
+						ImGui::SliderFloat3("direction", (float*)& spotLight3.direction, -1.0f, 1.0f);
+						ImGui::SliderFloat3("position", (float*)& spotLight3.position, -10.0f, 10.0f);
+						ImGui::ColorEdit3("ambient", (float*)& spotLight3.ambient);
+						ImGui::ColorEdit3("diffuse", (float*)& spotLight3.diffuse);
+						ImGui::ColorEdit3("specular", (float*)& spotLight3.specular);
 						ImGui::TreePop();
 					}
 					
