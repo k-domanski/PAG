@@ -407,9 +407,9 @@ int main(void)
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		for (int i = -100; i < 101; i++)
+		for (int i = -10; i < 11; i++)
 		{
-			for (int j = -100; j < 101; j++)
+			for (int j = -10; j < 11; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
@@ -435,7 +435,7 @@ int main(void)
 		root.AddChild(dl1);
 		SceneNode pl1(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(4.0f));
 		root.AddChild(pl1);
-		SceneNode pl2(glm::vec3(0.5f, 25.0f, 0.0f), glm::vec3(4.0f));
+		SceneNode pl2(glm::vec3(0.5f, 2.0f, 0.0f), glm::vec3(4.0f));
 		root.AddChild(pl2);
 		SceneNode sl1(glm::vec3(0.5f, 125.0f, 0.0f), glm::vec3(1.0f));
 		root.AddChild(sl1);
@@ -563,6 +563,12 @@ int main(void)
 			
 			if (isPBR)
 			{
+				for (int i = 0; i < N_SPOT; i++)
+				{
+					spotLights[i]->isActive = false;
+				}
+				//directional.isActive = false;
+				
 				PBR.Bind();
 				PBR.SetUniformMat4f("projection", projection);
 				PBR.SetUniformMat4f("view", view);
@@ -574,6 +580,9 @@ int main(void)
 				{
 					pointLights[i]->SetUniforms(PBR, "pointLight[" + std::to_string(i) + "]");
 				}
+
+				for (int i = 0; i < N_DIR; i++)
+					directional.SetUniforms(shader, "dirLight[" + std::to_string(i) + "]");
 				/*roof Draw*/
 				roofVAO.Bind();
 				roofTexture.Bind(0);
@@ -625,7 +634,7 @@ int main(void)
 				}
 
 				for (int i = 0; i < N_DIR; i++)
-					directional.SetUniforms(shader, "dirLight[0]");
+					directional.SetUniforms(shader, "dirLight[" + std::to_string(i) + "]");
 
 				for (int i = 0; i < N_SPOT; i++)
 					spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
@@ -708,7 +717,6 @@ int main(void)
 					{
 						if (ImGui::TreeNode("material"))
 						{
-							ImGui::SliderFloat3("albedo", (float*)& pbrMaterial.albedo, -1.0f, 1.0f);
 							ImGui::SliderFloat("metallic", (float*)& pbrMaterial.metallic, 0.0f, 1.0f);
 							ImGui::SliderFloat("roughness", (float*)& pbrMaterial.roughness, 0.0f, 1.0f);
 							ImGui::SliderFloat("ao", (float*)& pbrMaterial.ao, 0.0f, 1.0f);
@@ -727,6 +735,13 @@ int main(void)
 							ImGui::Checkbox("on/off", &pointLight1.isActive);
 							ImGui::ColorEdit3("position", (float*)& pointLight1.position);
 							ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNode("directional"))
+						{
+							ImGui::Checkbox("on/off", &directional.isActive);
+							ImGui::SliderFloat3("direction", (float*)& directional.direction, -1.0f, 1.0f);
+							ImGui::ColorEdit3("diffuse", (float*)& directional.diffuse);
 							ImGui::TreePop();
 						}
 					}
