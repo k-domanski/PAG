@@ -407,9 +407,9 @@ int main(void)
 		SceneNode root(glm::vec3(0.0f), glm::vec3(1.0f));
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		for (int i = -10; i < 11; i++)
+		for (int i = -100; i < 101; i++)
 		{
-			for (int j = -10; j < 11; j++)
+			for (int j = -100; j < 101; j++)
 			{
 				SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
 				SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
