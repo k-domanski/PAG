@@ -19,6 +19,7 @@
 #include "Model.h"
 #include "SceneNode.h"
 #include <math.h>
+#include "SkyBox.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -29,7 +30,7 @@ const unsigned int N_POINT = 2;
 const unsigned int N_SPOT = 3;
 
 
-Camera gCamera(glm::vec3(0.0f, 30.0f, 30.0f));
+Camera gCamera(glm::vec3(0.0f, 0.0f, 30.0f));
 float gLastX = SCR_WIDTH / 2.0f;
 float gLastY = SCR_HEIGHT / 2.0f;
 bool gFirstMouse = true;
@@ -230,21 +231,6 @@ int main(void)
 		stbi_set_flip_vertically_on_load(true);
 		
 		/*3D house*/
-		//std::vector<float> houseVertices =
-		//{
-		//	-0.05f,  0.05f,0.0f, 1.0f, 0.0f, 0.0f,
-		//	 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
-		//	-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
-		//				   
-		//	 0.05f,  0.05f,0.0f, 0.0f, 1.0f, 1.0f,
-		//
-		//	 0.05f, -0.05f,-0.1f,0.0f, 1.0f, 0.0f,
-		//	 0.05f,  0.05f,-0.1f,0.0f, 1.0f, 1.0f,
-		//
-		//	 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f,
-		//	 -0.05f,  0.05f,-0.1f, 1.0f, 0.0f, 0.0f,
-		//};
-		
 		std::vector<float> houseVertices =
 		{
 			-0.05f, -0.05f, -0.05f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
@@ -290,34 +276,11 @@ int main(void)
 			-0.05f,  0.05f, -0.05f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
 		};
 
-		std::vector<unsigned int> houseIndices =
-		{
-			/*front quad*/
-			0,1,2,
-			0,1,3,
-
-			/*right quad*/
-			1, 3, 4,
-			4, 5, 3,
-
-			/*left quad*/
-			0, 2, 6,
-			0, 7, 6,
-
-			/*back quad*/
-			4,6,7,
-			4,5,7,
-
-			/*bottom quad*/
-			2,6,1,
-			1,4,6
-		};
 		std::vector<unsigned int> groundInd =
 		{
 			31,33,34,
 			34, 31, 35
 		};
-		IndexBuffer houseIbo(houseIndices);
 		IndexBuffer groundIbo(groundInd);
 
 		/*3D roof*/
@@ -346,36 +309,70 @@ int main(void)
 			-0.05f, -0.05f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
 			-0.05f, -0.05f,-0.1f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 		};
-
-		//std::vector<float> roofVertices =
-		//{
-		//	-0.0f,  0.1f, -0.05f, 1.0f, 0.0f, 0.0f,
-		//	 0.05f, -0.05f,0.0f, 0.0f, 1.0f, 0.0f,
-		//	-0.05f, -0.05f,0.0f, 0.0f, 0.0f, 1.0f,
-		//
-		//	 0.05f, -0.05f,-0.1f, 0.0f, 1.0f, 0.0f,
-		//	 -0.05f, -0.05f,-0.1f, 0.0f, 0.0f, 1.0f
-		//};
-		
-		std::vector<unsigned int> roofIndices =
+		std::vector<float> skyboxVertices =
 		{
-			/*side triangles*/
-			0, 1, 2,
-			0, 1, 3,
-			0, 2, 4,
-			0, 3, 4,
-			
-			/*bottom quad*/
-			1, 2, 3,
-			1, 2, 4
+			-1.0f,  1.0f, -1.0f,
+			-1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+
+			-1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+
+			-1.0f, -1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+
+			-1.0f,  1.0f, -1.0f,
+			 1.0f,  1.0f, -1.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f, -1.0f,
+
+			-1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			 1.0f, -1.0f,  1.0f
 		};
-		
-		//IndexBuffer roofIbo(roofIndices);
-		
-		
+		VertexArray skyboxVao;
+		VertexBuffer skyboxVbo(skyboxVertices, skyboxVertices.size() * sizeof(float));
+		VertexBufferLayout skyboxLayout;
+		skyboxLayout.Push<float>(3);
+		skyboxVao.AddBuffer(skyboxVbo, skyboxLayout);
+		std::vector<std::string> faces =
+		{
+			"res/textures/skybox/right.jpg",
+			"res/textures/skybox/left.jpg",
+			"res/textures/skybox/top.jpg",
+			"res/textures/skybox/bottom.jpg",
+			"res/textures/skybox/front.jpg",
+			"res/textures/skybox/back.jpg"
+		};
+
+		Skybox skybox(faces, skyboxVao);
 		Shader shader("res/shaders/Basic.shader", 0);
 		Shader light("res/shaders/LightSource.shader", 1);
 		Shader PBR("res/shaders/PBR.shader", 2);
+		Shader skyboxShader("res/shaders/skybox.shader", 3);
 
 		Texture roofTexture("roof.png", "res/textures", "diffuse");
 		roofTexture.Bind(0);
@@ -660,11 +657,15 @@ int main(void)
 				groundTexture.Unbind();
 
 				shader.Unbind();
+
+				/*skybox*/
+				skyboxShader.Bind();
+				glm::mat4 skyboxview = glm::mat4(1.0f);
+				skyboxview = glm::mat4(glm::mat3(gCamera.GetViewMatrix()));
+				skyboxShader.SetUniformMat4f("view", skyboxview);
+				skyboxShader.SetUniformMat4f("projection", projection);
+				skybox.Draw();
 			}
-			
-			
-			
-			
 
 			/*light container draw*/
 			light.Bind();
