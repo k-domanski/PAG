@@ -373,6 +373,7 @@ int main(void)
 		Shader light("res/shaders/LightSource.shader", 1);
 		Shader PBR("res/shaders/PBR.shader", 2);
 		Shader skyboxShader("res/shaders/skybox.shader", 3);
+		Shader reflectShader("res/shaders/reflection.shader", 4);
 
 		Texture roofTexture("roof.png", "res/textures", "diffuse");
 		roofTexture.Bind(0);
@@ -637,26 +638,34 @@ int main(void)
 					spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
 
 				/*roof Draw*/
-				roofVAO.Bind();
-				roofTexture.Bind(0);
+				reflectShader.Bind();
+				reflectShader.SetUniformMat4f("view", view);
+				reflectShader.SetUniformMat4f("projection", projection);
+				reflectShader.SetUniformVec3f("cameraPos", gCamera.Position);
+				//roofVAO.Bind();
+				houseVAO.Bind();
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
+				//roofTexture.Bind(0);
 				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
-				roofVAO.Unbind();
-				roofTexture.Unbind();
+				//roofVAO.Unbind();
+				houseVAO.Unbind();
+				reflectShader.Unbind();
+				//roofTexture.Unbind();
 
 				/*house Draw*/
-				houseVAO.Bind();
-				houseTexture.Bind(0);
-				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
-				houseVAO.Unbind();
-				houseTexture.Unbind();
-
-				/*ground Draw*/
-				groundVao.Bind();
-				groundTexture.Bind(0);
-				Renderer::Draw(groundVao, groundIbo, shader);
-				groundTexture.Unbind();
-
-				shader.Unbind();
+				//houseVAO.Bind();
+				//houseTexture.Bind(0);
+				//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
+				//houseVAO.Unbind();
+				//houseTexture.Unbind();
+				//
+				///*ground Draw*/
+				//groundVao.Bind();
+				//groundTexture.Bind(0);
+				//Renderer::Draw(groundVao, groundIbo, shader);
+				//groundTexture.Unbind();
+				//
+				//shader.Unbind();
 
 				/*skybox*/
 				skyboxShader.Bind();

@@ -189,6 +189,8 @@
     <None Include="res\shaders\GeometryTest.shader" />
     <None Include="res\shaders\LightSource.shader" />
     <None Include="res\shaders\PBR.shader" />
+    <None Include="res\shaders\reflection.shader" />
+    <None Include="res\shaders\refraction.shader" />
     <None Include="res\shaders\skybox.shader" />
     <None Include="res\shaders\Test.shader" />
   </ItemGroup>

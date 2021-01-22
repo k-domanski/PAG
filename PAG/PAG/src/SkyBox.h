@@ -26,6 +26,8 @@ public:
 		m_Vao.Unbind();
 		glDepthFunc(GL_LESS);
 	}
+
+	inline const unsigned int GetTexture() const { return m_TextureID; }
 private:
 	unsigned int m_TextureID;
 	VertexArray m_Vao;
