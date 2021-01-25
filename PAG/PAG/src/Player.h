@@ -23,7 +23,7 @@ public:
 		glm::vec3 dir;
 		if (direction == F)
 		{
-			dir = glm::vec3(1.0f, 0.0f, 0.0f);
+			dir = glm::vec3(0.0f, 0.0f, 1.0f);
 			dir *= velocity;
 			model->Local() = glm::translate(model->Local(), dir);
 		}
@@ -42,11 +42,13 @@ public:
 		else if (direction == L)
 		{
 			//dir = glm::vec3(0.0f, 0.0f, 0.0f);
-			model->Local() = glm::rotate(model->Local(), Yaw - previousYaw, glm::vec3(0.0f,1.0f,0.0f));
+			//model->Local() = glm::rotate(model->Local(), (Yaw - previousYaw) * deltaTime, glm::vec3(0.0f,1.0f,0.0f));
+			model->Local() = glm::rotate(model->Local(), 2.0f * deltaTime, glm::vec3(0.0f,1.0f,0.0f));
 		}
 		else if (direction == R)
 		{
-			model->Local() = glm::rotate(model->Local(), -(Yaw - previousYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+			//model->Local() = glm::rotate(model->Local(), -(Yaw - previousYaw) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+			model->Local() = glm::rotate(model->Local(), -2.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 		}
 
 		

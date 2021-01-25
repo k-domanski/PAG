@@ -4,20 +4,20 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTextCoord;
-layout(location = 3) in mat4 aInstanceModel;
 
 out vec3 fNormal;
 out vec3 fPos;
 out vec2 fTextCoord;
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main()
 {
-	fPos = vec3(aInstanceModel * vec4(position, 1.0));
+	fPos = vec3(model * vec4(position, 1.0));
 	gl_Position = projection * view * vec4(fPos, 1.0);
 	//gl_Position = projection * view * aInstanceModel * vec4(position, 1.0);
-	fNormal = mat3(transpose(inverse(aInstanceModel))) * aNormal;
+	fNormal = mat3(transpose(inverse(model))) * aNormal;
 
 	fTextCoord = aTextCoord;
 };
@@ -84,13 +84,13 @@ in vec3 fPos;
 in vec2 fTextCoord;
 
 #define NUM_DIR_LIGHT 1
-#define NUM_SPOT_LIGHT 3
-#define NUM_POINT_LIGHT 2
+#define NUM_SPOT_LIGHT 0
+#define NUM_POINT_LIGHT 0
 
 uniform Material material;
 uniform DirLight dirLight[NUM_DIR_LIGHT];
-uniform PointLight pointLight[NUM_POINT_LIGHT];
-uniform SpotLight spotLight[NUM_SPOT_LIGHT];
+//uniform PointLight pointLight[NUM_POINT_LIGHT];
+//uniform SpotLight spotLight[NUM_SPOT_LIGHT];
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -113,17 +113,17 @@ void main()
 			result += calculateDirLight(dirLight[i], fNormal, viewDir);
 	}
 	
-	for (int i = 0; i < NUM_SPOT_LIGHT; i++)
-	{
-		if (spotLight[i].isActive)
-			result += calculateSpotLight(spotLight[i], fNormal, fPos, viewDir);
-	}
-
-	for (int i = 0; i < NUM_POINT_LIGHT; i++)
-	{
-		if(pointLight[i].isActive)
-			result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
-	}
+	//for (int i = 0; i < NUM_SPOT_LIGHT; i++)
+	//{
+	//	if (spotLight[i].isActive)
+	//		result += calculateSpotLight(spotLight[i], fNormal, fPos, viewDir);
+	//}
+	//
+	//for (int i = 0; i < NUM_POINT_LIGHT; i++)
+	//{
+	//	if(pointLight[i].isActive)
+	//		result += calculatePointLight(pointLight[i], fNormal, fPos, viewDir);
+	//}
 
 	FragColor = vec4(result, 1.0);
 };

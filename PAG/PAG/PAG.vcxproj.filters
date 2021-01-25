@@ -144,5 +144,6 @@
     <None Include="res\shaders\reflection.shader" />
     <None Include="res\shaders\refraction.shader" />
     <None Include="res\shaders\noLight.shader" />
+    <None Include="res\shaders\Phong.shader" />
   </ItemGroup>
 </Project>

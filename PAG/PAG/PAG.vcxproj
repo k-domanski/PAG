@@ -191,6 +191,7 @@
     <None Include="res\shaders\LightSource.shader" />
     <None Include="res\shaders\noLight.shader" />
     <None Include="res\shaders\PBR.shader" />
+    <None Include="res\shaders\Phong.shader" />
     <None Include="res\shaders\reflection.shader" />
     <None Include="res\shaders\refraction.shader" />
     <None Include="res\shaders\skybox.shader" />
