@@ -163,6 +163,7 @@
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\SceneNode.h" />
     <ClInclude Include="src\Shader.h" />
@@ -188,6 +189,7 @@
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\GeometryTest.shader" />
     <None Include="res\shaders\LightSource.shader" />
+    <None Include="res\shaders\noLight.shader" />
     <None Include="res\shaders\PBR.shader" />
     <None Include="res\shaders\reflection.shader" />
     <None Include="res\shaders\refraction.shader" />

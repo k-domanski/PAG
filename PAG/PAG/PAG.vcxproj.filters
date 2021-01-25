@@ -128,6 +128,9 @@
     <ClInclude Include="src\SkyBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -140,5 +143,6 @@
     <None Include="res\shaders\skybox.shader" />
     <None Include="res\shaders\reflection.shader" />
     <None Include="res\shaders\refraction.shader" />
+    <None Include="res\shaders\noLight.shader" />
   </ItemGroup>
 </Project>
