@@ -23,7 +23,7 @@ public:
 		glm::vec3 dir;
 		if (direction == F)
 		{
-			dir = glm::vec3(0.0f, 0.0f, 1.0f);
+			dir = glm::vec3(1.0f, 0.0f, 0.0f);
 			dir *= velocity;
 			model->Local() = glm::translate(model->Local(), dir);
 		}
@@ -71,7 +71,7 @@ public:
 
 	inline const glm::vec3& getFront() const { return Front; }
 private:
-	float movementSpeed = 10.0f;
+	float movementSpeed = 25.0f;
 	glm::vec3 Front = glm::vec3(0.0f,0.0f,-1.0f);
 	float Yaw = 90.0f;
 	float previousYaw;

@@ -408,16 +408,25 @@ int main(void)
 		groundVao.AddBuffer(houseVBO, layout);
 		
 		//Model backpack("res/models/backpack/backpack.obj");
-		Model nanosuit("res/models/nanosuit/nanosuit.obj");
+		//Model nanosuit("res/models/nanosuit/nanosuit.obj");
+		Model nanosuit("res/models/helikopter.obj");
+		Model smiglo("res/models/smiglo1.obj");
+		Model nogi("res/models/nogi.obj");
 		SceneNode* root =  new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
 		SceneNode* box1 =  new SceneNode(glm::vec3(0.0f), glm::vec3(0.1f));
+		SceneNode* smig=  new SceneNode(glm::vec3(-2.0f, -10.0f, 0.0f), glm::vec3(5.0f));
+		SceneNode* nog =  new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
 		SceneNode* box2 =  new SceneNode(glm::vec3(0.0f), glm::vec3(1000.0f, 0.0f, 1000.0f));
-		SceneNode* camera = new SceneNode(glm::vec3(0.0f, 10.0f, -30.0f), glm::vec3(1.0f));
+		SceneNode* camera = new SceneNode(glm::vec3(-60.0f, 10.0f, 0.0f), glm::vec3(1.0f));
 		root->AddChild(box1);
 		root->AddChild(box2);
 		box1->AddChild(camera);
+		box1->AddChild(smig);
+		box1->AddChild(nog);
+		
 		//Player* player = new Player();
 		gPlayer->model = box1;
+		//gPlayer->model->Local() = glm::rotate(gPlayer->model->Local(), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		//for (int i = -100; i < 101; i++)
@@ -552,6 +561,8 @@ int main(void)
 		bool isWireFrame = false;
 		bool showdemowindow = false;
 		bool isPBR = false;
+		glm::mat4 test = glm::mat4(1.0f);
+		test = glm::translate(test, glm::vec3(2.0f, 0.0f, 0.0f));
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -563,6 +574,9 @@ int main(void)
 			/* Render here */
 
 			
+			//test = glm::rotate(glm::mat4(1.0f), gDeltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+			smig->Local() = glm::rotate(smig->Local(), gDeltaTime * 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+			//smig->Local() = test * smig->Local();
 			Renderer::Clear();
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -692,16 +706,22 @@ int main(void)
 
 
 			reflectShader.Bind();
-			reflectShader.SetUniformMat4f("model", gPlayer->model->World());
 			reflectShader.SetUniformMat4f("view", view);
 			reflectShader.SetUniformMat4f("projection", projection);
 			reflectShader.SetUniformVec3f("cameraPos", gCamera.Position);
-			//houseVAO.Bind();
+			
+			reflectShader.SetUniformMat4f("model", gPlayer->model->World());
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
 			nanosuit.Draw(reflectShader);
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
-			//houseVAO.Unbind();
 			
+			reflectShader.SetUniformMat4f("model", smig->World());
+			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
+			smiglo.Draw(reflectShader);
+
+			reflectShader.SetUniformMat4f("model", nog->World());
+			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
+			nogi.Draw(reflectShader);
+
 			reflectShader.Unbind();
 
 			///*roof Draw*/
