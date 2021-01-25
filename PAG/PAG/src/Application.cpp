@@ -419,7 +419,7 @@ int main(void)
 		//SceneNode* camera = new SceneNode(glm::vec3(-60.0f, 10.0f, 0.0f), glm::vec3(1.0f));
 		SceneNode* camera = new SceneNode(glm::vec3(0.0f, 10.0f, -30.0f), glm::vec3(1.0f));
 		SceneNode* houseRoot = new SceneNode(glm::vec3(0.0f), glm::vec3(100.0f));
-		SceneNode* house1 = new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
+		SceneNode* house1 = new SceneNode(glm::vec3(0.0f, 0.05f, 0.0f), glm::vec3(1.0f));
 		SceneNode* roof1 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
 		root->AddChild(box1);
 		root->AddChild(box2);
@@ -430,35 +430,9 @@ int main(void)
 		box1->AddChild(smig);
 		box1->AddChild(nog);
 		
-		//Player* player = new Player();
 		gPlayer->model = box1;
-		//gPlayer->model->Local() = glm::rotate(gPlayer->model->Local(), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		//root.World().Model = glm::rotate(root.World().Model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-
-		//for (int i = -100; i < 101; i++)
-		//{
-		//	for (int j = -100; j < 101; j++)
-		//	{
-		//		SceneNode test(glm::vec3((float)i, 0.0f, (float)j), glm::vec3(5.0f));
-		//		SceneNode test1(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
-		//		test.AddChild(test1);
-		//		root.AddChild(test);
-		//	}
-		//}
-		//
-		//std::vector<glm::mat4> data;
-		//std::vector<glm::mat4> data1;
-		//std::vector<glm::mat4> data2;
-		//root.calculateWorld(root, root.World());
-		//
-		//for (unsigned int i = 0; i < root.NumOfChildren(); i++)
-		//{
-		//	data.push_back(root.Children()[i].World().Model);
-		//	for (int j = 0; j < root.Children()[i].NumOfChildren(); j++)
-		//	{
-		//		data1.push_back(root.Children()[i].Children()[j].World().Model);
-		//	}
-		//}
+		
+		/*LIGHTS*/
 		SceneNode* dl1 = new SceneNode(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f));
 		root->AddChild(dl1);
 		//SceneNode pl1(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(4.0f));
@@ -471,74 +445,9 @@ int main(void)
 		//root.AddChild(sl2);
 		//SceneNode sl3(glm::vec3(5.f, 5.0f, 5.0f), glm::vec3(1.0f));
 		//root.AddChild(sl3);
-		//SceneNode ground(glm::vec3(0.0f, -0.2f, 0.0f), glm::vec3(2500.0f,1.0f, 2500.0f));
-		//root.AddChild(ground);
-		//root.calculateWorld(root, root.World());
-		//data2.push_back(root.Children()[root.Children().size() - 1].World().Model);
-		//VertexBuffer roofBuffer(data1);
-		//VertexBuffer houseBuffer(data);
-		//VertexBuffer groundBuffer(data2);
 		
 		
-		//PointLight pointLight;
-		//PointLight pointLight1;
-		//pointLight.position = root.Children()[root.Children().size() - 5].World().Model[3];
-		//pointLight1.position = root.Children()[root.Children().size() - 6].World().Model[3];
-		//
-		//PointLight* pointLights[2];
-		//pointLights[0] = &pointLight;
-		//pointLights[1] = &pointLight1;
-		//
 		DirLight directional;
-		//SpotLight spotLight1;
-		//SpotLight spotLight2;
-		//SpotLight spotLight3;
-		//spotLight2.position = glm::vec3(0.0f, 5.0f, 0.0f);
-		//spotLight2.direction = glm::vec3(1.0f, -1.0f, 0.0f);
-		//
-		//spotLight3.position = glm::vec3(5.0f, 5.0f, 5.0f);
-		//spotLight3.direction = glm::vec3(0.0f, -1.0f, 0.0f);
-		//SpotLight* spotLights[N_SPOT];
-		//spotLights[0] = &spotLight1;
-		//spotLights[1] = &spotLight2;
-		//spotLights[2] = &spotLight3;
-		//
-		//PBRMaterial pbrMaterial;
-
-		//groundVao.Bind();
-		//groundBuffer.Bind();
-		//glEnableVertexAttribArray(3);
-		//glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-		//glEnableVertexAttribArray(4);
-		//glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-		//glEnableVertexAttribArray(5);
-		//glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-		//glEnableVertexAttribArray(6);
-		//glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-		//groundBuffer.Unbind();
-		//glVertexAttribDivisor(3, 1);
-		//glVertexAttribDivisor(4, 1);
-		//glVertexAttribDivisor(5, 1);
-		//glVertexAttribDivisor(6, 1);
-		//groundVao.Unbind();
-		//
-		//roofVAO.Bind();
-		//roofBuffer.Bind();
-		//glEnableVertexAttribArray(3);
-		//glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-		//glEnableVertexAttribArray(4);
-		//glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-		//glEnableVertexAttribArray(5);
-		//glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-		//glEnableVertexAttribArray(6);
-		//glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-		//roofBuffer.Unbind();
-		//glVertexAttribDivisor(3, 1);
-		//glVertexAttribDivisor(4, 1);
-		//glVertexAttribDivisor(5, 1);
-		//glVertexAttribDivisor(6, 1);
-		//roofVAO.Unbind();
-		//
 		//houseVAO.Bind();
 		//houseBuffer.Bind();
 		//glEnableVertexAttribArray(3);
@@ -784,40 +693,6 @@ int main(void)
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 				//if (ImGui::CollapsingHeader("Lights"))
 				//{
-				//	if (isPBR)
-				//	{
-				//		if (ImGui::TreeNode("material"))
-				//		{
-				//			ImGui::SliderFloat("metallic", (float*)& pbrMaterial.metallic, 0.0f, 1.0f);
-				//			ImGui::SliderFloat("roughness", (float*)& pbrMaterial.roughness, 0.0f, 1.0f);
-				//			ImGui::SliderFloat("ao", (float*)& pbrMaterial.ao, 0.0f, 1.0f);
-				//			ImGui::TreePop();
-				//		}
-				//		if (ImGui::TreeNode("point1"))
-				//		{
-				//			ImGui::Checkbox("on/off", &pointLight.isActive);
-				//			ImGui::ColorEdit3("position", (float*)& pointLight.position);
-				//			ImGui::ColorEdit3("diffuse", (float*)& pointLight.diffuse);
-				//			ImGui::TreePop();
-				//		}
-				//
-				//		if (ImGui::TreeNode("point2"))
-				//		{
-				//			ImGui::Checkbox("on/off", &pointLight1.isActive);
-				//			ImGui::ColorEdit3("position", (float*)& pointLight1.position);
-				//			ImGui::ColorEdit3("diffuse", (float*)& pointLight1.diffuse);
-				//			ImGui::TreePop();
-				//		}
-				//		if (ImGui::TreeNode("directional"))
-				//		{
-				//			ImGui::Checkbox("on/off", &directional.isActive);
-				//			ImGui::SliderFloat3("direction", (float*)& directional.direction, -1.0f, 1.0f);
-				//			ImGui::ColorEdit3("diffuse", (float*)& directional.diffuse);
-				//			ImGui::TreePop();
-				//		}
-				//	}
-				//	else
-				//	{
 				//		if (ImGui::TreeNode("point1"))
 				//		{
 				//			ImGui::Checkbox("on/off", &pointLight.isActive);
