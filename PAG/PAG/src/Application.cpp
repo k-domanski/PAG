@@ -58,7 +58,7 @@ struct DirLight
 
 	DirLight()
 	{
-		ambient = glm::vec3(0.0f, 0.0f, 0.0f);
+		ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 		diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 		specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	}
@@ -439,27 +439,47 @@ int main(void)
 
 		//Model backpack("res/models/backpack/backpack.obj");
 		//Model nanosuit("res/models/nanosuit/nanosuit.obj");
-		Model nanosuit("res/models/helikopter2.obj");
+		Model helicopter("res/models/helikopter2.obj");
 		Model smiglo("res/models/smiglo1.obj");
-		Model nogi("res/models/nogi.obj");
+		
 		SceneNode* root =  new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
-		SceneNode* box1 =  new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
+		SceneNode* box1 =  new SceneNode(glm::vec3(0.0f,0.0f, -9.0f), glm::vec3(0.75f));
 		SceneNode* smig=  new SceneNode(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-		SceneNode* nog =  new SceneNode(glm::vec3(0.0f), glm::vec3(1.0f));
 		SceneNode* box2 =  new SceneNode(glm::vec3(0.0f), glm::vec3(1000.0f, 0.0f, 1000.0f));
 		//SceneNode* camera = new SceneNode(glm::vec3(-60.0f, 10.0f, 0.0f), glm::vec3(1.0f));
 		SceneNode* camera = new SceneNode(glm::vec3(0.0f, 10.0f, -30.0f), glm::vec3(1.0f));
+		
 		SceneNode* houseRoot = new SceneNode(glm::vec3(0.0f), glm::vec3(100.0f));
 		SceneNode* house1 = new SceneNode(glm::vec3(0.0f, 0.05f, 0.0f), glm::vec3(1.0f));
 		SceneNode* roof1 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
+
+		SceneNode* house2 = new SceneNode(glm::vec3(0.3f, 0.05f, 0.3f), glm::vec3(1.0f));
+		SceneNode* roof2 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
+
+		SceneNode* house3 = new SceneNode(glm::vec3(-0.3f, 0.05f, 0.3f), glm::vec3(1.0f));
+		SceneNode* roof3 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
+
+		SceneNode* house4 = new SceneNode(glm::vec3(-0.3f, 0.05f, -0.3f), glm::vec3(1.0f));
+		SceneNode* roof4 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
+
+		SceneNode* house5 = new SceneNode(glm::vec3(0.3f, 0.05f, -0.3f), glm::vec3(1.0f));
+		SceneNode * roof5 = new SceneNode(glm::vec3(0.0f, 0.1f, 0.05f), glm::vec3(1.0f));
+		
 		root->AddChild(box1);
 		root->AddChild(box2);
 		root->AddChild(houseRoot);
 		houseRoot->AddChild(house1);
 		house1->AddChild(roof1);
+		houseRoot->AddChild(house2);
+		house2->AddChild(roof2);
+		houseRoot->AddChild(house3);
+		house3->AddChild(roof3);
+		houseRoot->AddChild(house4);
+		house4->AddChild(roof4);
+		houseRoot->AddChild(house5);
+		house5->AddChild(roof5);
 		box1->AddChild(camera);
 		box1->AddChild(smig);
-		box1->AddChild(nog);
 		
 		gPlayer->model = box1;
 		
@@ -512,10 +532,11 @@ int main(void)
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+			/*Shadow MAP*/
 			glm::mat4 lightProjection, lightView;
 			glm::mat4 lightSpaceMatrix;
 			float near_plane = 1.0f, far_plane = 7.5f;
+			//lightProjection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 			lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 			glm::vec3 lightPos = dl1->World()[3];
 			lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -552,27 +573,21 @@ int main(void)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			
 			
-
+			/*normal rendering*/
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			//test = glm::rotate(glm::mat4(1.0f), gDeltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
-			smig->Local() = glm::rotate(smig->Local(), gDeltaTime * 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-			//smig->Local() = test * smig->Local();
+			smig->Local() = glm::rotate(smig->Local(), gDeltaTime * 3.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 			Renderer::Clear();
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
-			//player->model->Local() = glm::rotate(player->model->Local(), gDeltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 			root->calculateWorld(root->World());
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view;
 			if (isCamera)
 			{
-				//gCamera.Position = gPlayer->model->World()[3] + glm::vec4(0.0f,1.0f,3.0f,0.0f);
 				gCamera.Position = camera->World()[3];
-				//gCamera.Front = glm::normalize(gPlayer->model->Local()[3]);
-				//gCamera.Front = -gPlayer->getFront();
 				glm::vec3 front = gPlayer->model->World()[3];
 				glm::vec3 pos = camera->World()[3];
 				view = glm::lookAt(gCamera.Position, front + glm::vec3(0.0f, 1.0f, 0.0f), gCamera.Up);
@@ -582,76 +597,38 @@ int main(void)
 				
 				view = gCamera.GetViewMatrix();
 			}
-			//glm::mat4 view = gCamera.GetViewMatrix();
-			
-			
-			//shader.Bind();
-			//shader.SetUniformMat4f("projection", projection);
-			//shader.SetUniformMat4f("view", view);
-			//
-			//shader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-			//shader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-			//shader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-			//
-			//shader.SetUniform1f("material.shininess", 32.0f);
-			//
-			//shader.SetUniformVec3f("spotLight[0].position", gCamera.Position);
-			//shader.SetUniformVec3f("spotLight[0].direction", gCamera.Front);
-			//
-			//shader.SetUniformVec3f("spotLight[1].position", spotLight2.position);
-			//shader.SetUniformVec3f("spotLight[1].direction", spotLight2.direction);
-			//shader.SetUniformVec3f("spotLight[2].position", spotLight3.position);
-			//shader.SetUniformVec3f("spotLight[2].direction", spotLight3.direction);
-			//
-			//shader.SetUniformVec3f("viewPos", gCamera.Position);
-			//
-			//
-			//for (int i = 0; i < N_POINT; i++)
-			//{
-			//	pointLights[i]->SetUniforms(shader, "pointLight[" + std::to_string(i) + "]");
-			//}
-			//
-			//for (int i = 0; i < N_DIR; i++)
-			//	directional.SetUniforms(shader, "dirLight[" + std::to_string(i) + "]");
-			//
-			//for (int i = 0; i < N_SPOT; i++)
-			//	spotLights[i]->SetUniforms(shader, "spotLight[" + std::to_string(i) + "]");
-
-			
-
-			/*house Draw*/
-			//houseVAO.Bind();
-			//houseTexture.Bind(0);
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data.size());
-			//houseVAO.Unbind();
-			//houseTexture.Unbind();
-			//
 			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			lightShader.Bind();
 			lightShader.SetUniformMat4f("view", view);
 			lightShader.SetUniformMat4f("projection", projection);
-			lightShader.SetUniformMat4f("model",house1->World());
+			
 			lightShader.SetUniformVec3f("viewPos", gCamera.Position);
 			lightShader.SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
-			//lightShader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-			//lightShader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 			lightShader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 			lightShader.SetUniform1f("material.shininess", 32.0f);
 			directional.SetUniforms(lightShader, "dirLight[0]");
-			houseVAO.Bind();
-			houseTexture.Bind();
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			houseVAO.Unbind();
-			houseTexture.Unbind();
+			/*house draw*/
 			roofVAO.Bind();
 			roofTexture.Bind();
 			lightShader.SetUniformMat4f("model", roof1->World());
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			lightShader.SetUniformMat4f("model", roof2->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			lightShader.SetUniformMat4f("model", roof3->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			lightShader.SetUniformMat4f("model", roof4->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			lightShader.SetUniformMat4f("model", roof5->World());
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			roofVAO.Unbind();
 			roofTexture.Unbind();
+			/*player draw*/
+			lightShader.SetUniformMat4f("model", gPlayer->model->World());
+			helicopter.Draw(lightShader);
+			/*ground draw*/
 			lightShader.SetUniformMat4f("model", box2->World());
 			groundVao.Bind();
 			groundTexture.Bind();
@@ -659,53 +636,40 @@ int main(void)
 			groundVao.Unbind();
 			groundTexture.Unbind();
 			lightShader.Unbind();
-			/*ground Draw*/
-			//shader.Bind();
-			//shader.SetUniformMat4f("view", view);
-			//shader.SetUniformMat4f("projection", projection);
 
 
+			/*REFRACTION*/
+			refractShader.Bind();
+			houseVAO.Bind();
+			
+			refractShader.SetUniformMat4f("view", view);
+			refractShader.SetUniformMat4f("projection", projection);
+			refractShader.SetUniformVec3f("cameraPos", gCamera.Position);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
+			refractShader.SetUniformMat4f("model", house1->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			refractShader.SetUniformMat4f("model", house2->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			refractShader.SetUniformMat4f("model", house3->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			refractShader.SetUniformMat4f("model", house4->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			refractShader.SetUniformMat4f("model", house5->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			
+			houseVAO.Unbind();
+			refractShader.Unbind();
+			
+			/*reflection*/
 			reflectShader.Bind();
 			reflectShader.SetUniformMat4f("view", view);
 			reflectShader.SetUniformMat4f("projection", projection);
 			reflectShader.SetUniformVec3f("cameraPos", gCamera.Position);
-			
-			
-			
 			reflectShader.SetUniformMat4f("model", smig->World());
 			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
 			smiglo.Draw(reflectShader);
-
-			reflectShader.SetUniformMat4f("model", nog->World());
-			glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
-			//nogi.Draw(reflectShader);
-
 			reflectShader.Unbind();
 
-			shader.Bind();
-			
-			
-			shader.SetUniformMat4f("view", view);
-			shader.SetUniformMat4f("projection", projection);
-			shader.SetUniformMat4f("model", gPlayer->model->World());
-			//glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
-			//groundTexture.Bind(0);
-			nanosuit.Draw(shader);
-			shader.Unbind();
-			///*roof Draw*/
-			//refractShader.Bind();
-			//refractShader.SetUniformMat4f("view", view);
-			//refractShader.SetUniformMat4f("projection", projection);
-			//refractShader.SetUniformVec3f("cameraPos", gCamera.Position);
-			////roofVAO.Bind();
-			//houseVAO.Bind();
-			//glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetTexture());
-			////roofTexture.Bind(0);
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, data1.size());
-			////roofVAO.Unbind();
-			//houseVAO.Unbind();
-			//refractShader.Unbind();
-			////roofTexture.Unbind();
 
 			/*skybox*/
 			skyboxShader.Bind();
@@ -714,38 +678,7 @@ int main(void)
 			skyboxShader.SetUniformMat4f("view", skyboxview);
 			skyboxShader.SetUniformMat4f("projection", projection);
 			skybox.Draw();
-			
 
-			///*light container draw*/
-			//light.Bind();
-			//light.SetUniformMat4f("projection", projection);
-			//light.SetUniformMat4f("view", view);
-			//
-			//
-			//light.SetUniformMat4f("model", root.Children()[root.Children().size()  - 6].World().Model);
-			//if(pointLight1.isActive)
-			//	Renderer::Draw(lightVAO, light);
-			//light.SetUniformMat4f("model", root.Children()[root.Children().size()  - 5].World().Model);
-			//if(pointLight.isActive)
-			//	Renderer::Draw(lightVAO, light);
-			//
-			//for (int i = 0; i < N_SPOT; i++)
-			//{
-			//	glm::mat4 m = glm::mat4(1.0f);
-			//	m = glm::translate(m, spotLights[i]->position);
-			//	light.SetUniformMat4f("model", m);
-			//	if (spotLights[i]->isActive)
-			//		Renderer::Draw(lightVAO, light);
-			//}
-			//{
-			//	glm::mat4 s = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
-			//	glm::mat4 m = glm::translate(glm::mat4(1.0f), glm::vec3(directional.direction.x, -directional.direction.y,directional.direction.z) * 10.0f);
-			//	light.SetUniformMat4f("model", m * s);
-			//	if(directional.isActive)
-			//		Renderer::Draw(lightVAO, light);
-			//}
-			//light.Unbind();
-			//lightVAO.Unbind();
 
 			if (isWireFrame)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -755,7 +688,7 @@ int main(void)
 			{
 				ImGui::Begin("Hello, world!");
 				ImGui::Checkbox("Wireframe", &isWireFrame);
-				ImGui::Checkbox("Camera", &isCamera);
+				ImGui::Checkbox("Helicopter", &isCamera);
 				//ImGui::Checkbox("Demo", &showdemowindow);
 				//if (showdemowindow)
 				//	ImGui::ShowDemoWindow();
@@ -877,15 +810,15 @@ void ProcessInput(GLFWwindow * window)
 		{
 			gPlayer->PlayerInput(U, gDeltaTime);
 		}
-		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			gPlayer->PlayerInput(F, gDeltaTime);
 		}
-		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 			gPlayer->PlayerInput(D, gDeltaTime);
-		if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 			gPlayer->PlayerInput(L, gDeltaTime);
-		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			gPlayer->PlayerInput(R, gDeltaTime);
 	}
 	
