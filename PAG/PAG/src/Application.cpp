@@ -26,6 +26,10 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+
+const unsigned int SHADOW_WIDTH= 1024;
+const unsigned int SHADOW_HEIGHT = 1024;
+
 const unsigned int N_DIR = 1;
 const unsigned int N_POINT = 2;
 const unsigned int N_SPOT = 3;
@@ -375,9 +379,10 @@ int main(void)
 		Shader skyboxShader("res/shaders/skybox.shader", 3);
 
 		Shader shader("res/shaders/noLight.shader", 0);
-		Shader lightShader("res/shaders/Phong.shader", 1);
+		Shader lightShader("res/shaders/Shadows.shader", 1);
 		Shader reflectShader("res/shaders/reflection.shader", 4);
 		Shader refractShader("res/shaders/refraction.shader", 5);
+		Shader depthShader("res/shaders/DepthShader.shader", 6);
 
 		Texture roofTexture("roof.png", "res/textures", "diffuse");
 		roofTexture.Bind(0);
@@ -406,6 +411,32 @@ int main(void)
 		lightVAO.AddBuffer(houseVBO, layout);
 		groundVao.AddBuffer(houseVBO, layout);
 		
+
+
+		/*DepthMAP*/
+		unsigned int depthMapFBO;
+		glGenFramebuffers(1, &depthMapFBO);
+
+		unsigned int depthMap;
+		glGenTextures(1, &depthMap);
+
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
+
+
 		//Model backpack("res/models/backpack/backpack.obj");
 		//Model nanosuit("res/models/nanosuit/nanosuit.obj");
 		Model nanosuit("res/models/helikopter2.obj");
@@ -433,18 +464,9 @@ int main(void)
 		gPlayer->model = box1;
 		
 		/*LIGHTS*/
-		SceneNode* dl1 = new SceneNode(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f));
+		SceneNode* dl1 = new SceneNode(glm::vec3(-2.0f, 10.0f, -1.0f), glm::vec3(1.0f));
+		//SceneNode* dl1 = new SceneNode(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f));
 		root->AddChild(dl1);
-		//SceneNode pl1(glm::vec3(0.5f, 1.5f, 5.0f), glm::vec3(4.0f));
-		//root.AddChild(pl1);
-		//SceneNode pl2(glm::vec3(0.5f, 2.0f, 0.0f), glm::vec3(4.0f));
-		//root.AddChild(pl2);
-		//SceneNode sl1(glm::vec3(0.5f, 125.0f, 0.0f), glm::vec3(1.0f));
-		//root.AddChild(sl1);
-		//SceneNode sl2(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f));
-		//root.AddChild(sl2);
-		//SceneNode sl3(glm::vec3(5.f, 5.0f, 5.0f), glm::vec3(1.0f));
-		//root.AddChild(sl3);
 		
 		
 		DirLight directional;
@@ -476,8 +498,8 @@ int main(void)
 		bool isWireFrame = false;
 		bool showdemowindow = false;
 		bool isPBR = false;
-		glm::mat4 test = glm::mat4(1.0f);
-		test = glm::translate(test, glm::vec3(2.0f, 0.0f, 0.0f));
+
+
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -487,8 +509,52 @@ int main(void)
 
 			ProcessInput(window);
 			/* Render here */
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+			glm::mat4 lightProjection, lightView;
+			glm::mat4 lightSpaceMatrix;
+			float near_plane = 1.0f, far_plane = 7.5f;
+			lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+			glm::vec3 lightPos = dl1->World()[3];
+			lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+			lightSpaceMatrix = lightProjection * lightView;
+			// render scene from light's point of view
+			depthShader.Bind();
+			depthShader.SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
+
+			glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+			glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+			glClear(GL_DEPTH_BUFFER_BIT);
 			
+
+			depthShader.SetUniformMat4f("model", house1->World());
+			houseVAO.Bind();
+			houseTexture.Bind();
+			glActiveTexture(GL_TEXTURE1);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			houseVAO.Unbind();
+			houseTexture.Unbind();
+			roofVAO.Bind();
+			roofTexture.Bind();
+			depthShader.SetUniformMat4f("model", roof1->World());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			roofVAO.Unbind();
+			roofTexture.Unbind();
+			depthShader.SetUniformMat4f("model", box2->World());
+			groundVao.Bind();
+			groundTexture.Bind();
+			Renderer::Draw(groundVao, groundIbo, depthShader);
+			groundVao.Unbind();
+			groundTexture.Unbind();
+			depthShader.Unbind();
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			
+			
+
+			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//test = glm::rotate(glm::mat4(1.0f), gDeltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 			smig->Local() = glm::rotate(smig->Local(), gDeltaTime * 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 			//smig->Local() = test * smig->Local();
@@ -560,12 +626,14 @@ int main(void)
 			//houseVAO.Unbind();
 			//houseTexture.Unbind();
 			//
-
+			glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			lightShader.Bind();
 			lightShader.SetUniformMat4f("view", view);
 			lightShader.SetUniformMat4f("projection", projection);
 			lightShader.SetUniformMat4f("model",house1->World());
 			lightShader.SetUniformVec3f("viewPos", gCamera.Position);
+			lightShader.SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
 			//lightShader.SetUniformVec3f("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
 			//lightShader.SetUniformVec3f("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 			lightShader.SetUniformVec3f("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -573,6 +641,8 @@ int main(void)
 			directional.SetUniforms(lightShader, "dirLight[0]");
 			houseVAO.Bind();
 			houseTexture.Bind();
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			houseVAO.Unbind();
 			houseTexture.Unbind();
@@ -582,17 +652,17 @@ int main(void)
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 			roofVAO.Unbind();
 			roofTexture.Unbind();
-			/*ground Draw*/
-			shader.Bind();
-			shader.SetUniformMat4f("model", box2->World());
-			shader.SetUniformMat4f("view", view);
-			shader.SetUniformMat4f("projection", projection);
+			lightShader.SetUniformMat4f("model", box2->World());
 			groundVao.Bind();
 			groundTexture.Bind();
-			Renderer::Draw(groundVao,groundIbo, shader);
+			Renderer::Draw(groundVao,groundIbo, lightShader);
 			groundVao.Unbind();
 			groundTexture.Unbind();
-			shader.Unbind();
+			lightShader.Unbind();
+			/*ground Draw*/
+			//shader.Bind();
+			//shader.SetUniformMat4f("view", view);
+			//shader.SetUniformMat4f("projection", projection);
 
 
 			reflectShader.Bind();
@@ -804,9 +874,13 @@ void ProcessInput(GLFWwindow * window)
 	else
 	{
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		{
 			gPlayer->PlayerInput(U, gDeltaTime);
+		}
 		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		{
 			gPlayer->PlayerInput(F, gDeltaTime);
+		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 			gPlayer->PlayerInput(D, gDeltaTime);
 		if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
@@ -839,7 +913,7 @@ void mouse_callback(GLFWwindow * window, double xpos, double ypos)
 	gLastY = ypos;
 
 	if (isCamera)
-		gPlayer->calculateMouseInput(xoffset, gDeltaTime);
+		gPlayer->calculateMouseInput(xoffset,yoffset, gDeltaTime);
 	else
 	{
 		gCamera.ProcessMouseMovement(xoffset, yoffset);
